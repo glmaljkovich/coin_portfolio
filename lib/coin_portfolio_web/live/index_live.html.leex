@@ -1,0 +1,127 @@
+<h2 class="ui center aligned icon header">
+    <i class="circular users icon"></i>
+    <%= @current_user.name %>
+</h2>
+  <div class="ui container">
+    <div class="ui center aligned green segment">
+      <div class="ui statistic">
+        <div class="value">
+          <i class="tiny dollar sign icon"></i><%=total_main_currency_spent @transactions %>
+        </div>
+        <div class="label">
+          <%= @current_user.main_currency %> spent
+        </div>
+      </div>
+      <div class="ui statistic">
+        <div class="value">
+          <i class="tiny dollar sign icon"></i><%=total_holdings_in_main_currency @transactions, get_rates(@rates) %>
+        </div>
+        <div class="label">
+          <%= @current_user.main_currency %> holdings
+        </div>
+      </div>
+    </div>
+    <div class="ui blue segment">
+    <form action="#" phx-submit="add">
+      <div class="ui form">
+        <div class="equal width fields">
+          <div class="field">
+            <label>Monto invertido</label>
+            <div class="ui left action left icon input">
+              <i class="dollar sign icon"></i>
+              <%= text_input :transaction, :currency_amount, placeholder: "0.00" %>
+              <div class="ui selection dropdown button">
+                <%= text_input :transaction, :main_currency, type: "hidden" %>
+                <div class="default text">ARS</div>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                  <div class="item">ARS</div>
+                  <div class="item">USD</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Tokens</label>
+            <div class="ui left action left icon input">
+              <i class="dollar sign icon"></i>
+              <%= text_input :transaction, :token_amount, placeholder: "0.00" %>
+              <div class="ui selection dropdown button">
+                <%= text_input :transaction, :token, type: "hidden" %>
+                <div class="default text">BTC</div>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                  <div class="item">BTC</div>
+                  <div class="item">ETH</div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <%= submit "Add", phx_disable_with: "Adding..." %>
+    </form>
+    </div>
+  </div>
+  <div class="ui segment">
+    <h2>BTC price</h2>
+    <p>$<%= to_currency(get_rates(@rates), 2) %></p>
+    <div class="ui list">
+      <%= for transaction <- @transactions do %>
+        <div class="item">
+          <div class="ui tablet stackable steps">
+            <div class="step">
+              <i class="dollar icon"></i>
+              <div class="content">
+                <div class="title"><%= to_currency(transaction.currency_amount, 2) %></div>
+                <div class="description"><%= transaction.main_currency %></div>
+              </div>
+            </div>
+            <div class="active step">
+              <i class="dollar icon"></i>
+              <div class="content">
+                <div class="title"><%= to_currency(transaction.token_amount, 8) %></div>
+                <div class="description"><%= transaction.token %></div>
+              </div>
+            </div>
+          </div>
+          <button class="ui icon button" phx-click="delete" phx-value-transactionId="<%=transaction.id %>">
+            <i class="close icon"></i>
+          </button>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+  <div class="ui segment">
+    <h2>Roadmap</h2>
+    <ol>
+      <li>
+        Select Main currency
+      </li>
+      <li>
+        Log transactions with Main currency spent and tokens purchased
+      </li>
+      <li>
+        Set Binance / Coinbase API token by user
+      </li>
+      <li>
+        Fetch current cryptocurrency value in Main Currency
+      </li>
+      <li>
+        Convert value to Main Currency
+      </li>
+      <li>
+        Sum all token holdings in Main Currency
+      </li>
+      <li>Sum Main currency spent</li>
+      <li>Compare spend vs current holding in Main Currency</li>
+      <li>
+        Generate daily snapshots and show bar chart
+      </li>
+      <li>
+        Allow fiat currency conversion of spent and current holdings. <br>
+       https://v6.exchangerate-api.com/v6/f5c77c453f31e6a472f5bf68/latest/ARS
+      </li>
+    </ol>
+  </div>

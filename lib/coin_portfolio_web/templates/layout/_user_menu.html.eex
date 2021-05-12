@@ -1,0 +1,16 @@
+
+<div class="ui menu">
+  <div class="header item">
+    <i class="bitcoin icon"></i> Coin Portfolio
+  </div>
+  <div class="menu right">
+    <%= if @current_user do %>
+      <a class="item" href="#"><i class="user circle icon"></i> <%=@current_user.email%></a>
+      <%= link "Settings", to: Routes.user_settings_path(@conn, :edit), class: "item" %>
+      <%= link "Log out", to: Routes.user_session_path(@conn, :delete), method: :delete, class: "item" %>
+    <% else %>
+      <%= link "Register", to: Routes.user_registration_path(@conn, :new), class: "item" %>
+      <%= link "Log in", to: Routes.user_session_path(@conn, :new), class: "item" %>
+    <% end %>
+  </div>
+</div>

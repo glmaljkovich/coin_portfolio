@@ -1,0 +1,58 @@
+<div class="ui container">
+
+<%= form_for @changeset, Routes.user_registration_path(@conn, :create), fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+<% end %>
+
+<div class="ui card">
+<div class="content">
+<div class="header">Register</div>
+<%= form_for @changeset, Routes.user_registration_path(@conn, :create), fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+  <div class="ui form">
+    <div class="field">
+      <%= label f, :name %>
+      <%= text_input f, :name, required: true, placeholder: "Satoshi" %>
+    </div>
+    <div class="field">
+      <%= label f, :email %>
+      <%= email_input f, :email, required: true, placeholder: "your@email.com" %>
+      <%= error_tag f, :email %>
+    </div>
+    <div class="field">
+      <%= label f, :password %>
+      <%= password_input f, :password, required: true, placeholder: "******" %>
+      <%= error_tag f, :password %>
+    </div>
+    <div class="field">
+      <label>Main Currency</label>
+      <%= select f, :main_currency, ["ARS", "USD", "EUR"] %>
+    </div>
+    <div class="field">
+      <label>CoinMarketCap API Key</label>
+      <%= text_input f, :cmc_api_key, required: true, placeholder: "c8eb6917-bd5b-4c83-8520-a0b3208a7bc7" %>
+    </div>
+    <div class="field">
+      <div class="ui checkbox">
+        <input type="checkbox" tabindex="0" class="hidden">
+        <label>I agree to the Terms and Conditions</label>
+      </div>
+    </div>
+    <p>
+      <%= link "Log in", to: Routes.user_session_path(@conn, :new) %> |
+      <%= link "Forgot your password?", to: Routes.user_reset_password_path(@conn, :new) %>
+    </p>
+    <%= submit "Register", class: "ui button" %>
+  </div>
+<% end %>
+</div>
+</div>
+</div>
