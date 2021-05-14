@@ -1,51 +1,61 @@
-<h2 class="ui center aligned icon header">
+<%=if @current_user do %>
+<div>
+<h2 class="ui inverted center aligned icon header">
     <i class="circular users icon"></i>
     <%= @current_user.name %>
 </h2>
   <div class="ui container">
     <div class="ui center aligned green segment">
-      <div class="ui statistic">
+      <div class="ui grey statistic">
         <div class="value">
-          <i class="tiny dollar sign icon"></i><%=total_main_currency_spent @transactions %>
+          <i class="tiny dollar sign icon"></i><%=to_currency(total_main_currency_spent(@transactions), 2) %>
         </div>
         <div class="label">
           <%= @current_user.main_currency %> spent
         </div>
       </div>
-      <div class="ui statistic">
+      <div class="ui <%= get_holdings_color @transactions, @rates %> statistic">
         <div class="value">
-          <i class="tiny dollar sign icon"></i><%=total_holdings_in_main_currency @transactions, get_rates(@rates) %>
+          <i class="tiny dollar sign icon"></i><%=to_currency(total_holdings_in_main_currency(@transactions, @rates), 2) %>
         </div>
         <div class="label">
           <%= @current_user.main_currency %> holdings
         </div>
       </div>
     </div>
+    <h2 class="ui inverted header">Add Transaction</h2>
     <div class="ui blue segment">
-    <form action="#" phx-submit="add">
-      <div class="ui form">
-        <div class="equal width fields">
-          <div class="field">
-            <label>Monto invertido</label>
-            <div class="ui left action left icon input">
-              <i class="dollar sign icon"></i>
-              <%= text_input :transaction, :currency_amount, placeholder: "0.00" %>
-              <div class="ui selection dropdown button">
-                <%= text_input :transaction, :main_currency, type: "hidden" %>
-                <div class="default text">ARS</div>
-                <i class="dropdown icon"></i>
-                <div class="menu">
-                  <div class="item">ARS</div>
-                  <div class="item">USD</div>
-                </div>
+      <form action="#" phx-submit="add">
+        <div class="ui form">
+          <div class="equal width fields">
+            <div class="four wide field">
+              <label>Monto invertido</label>
+              <div class="ui left icon input">
+                <i class="dollar sign icon"></i>
+                <%= text_input :transaction, :currency_amount, placeholder: "0.00" %>
               </div>
             </div>
-          </div>
-          <div class="field">
-            <label>Tokens</label>
-            <div class="ui left action left icon input">
-              <i class="dollar sign icon"></i>
-              <%= text_input :transaction, :token_amount, placeholder: "0.00" %>
+              <div class="four wide field">
+                <label>Moneda</label>
+                <div class="ui selection dropdown button">
+                  <%= text_input :transaction, :main_currency, type: "hidden" %>
+                  <div class="default text">ARS</div>
+                  <i class="dropdown icon"></i>
+                  <div class="menu">
+                    <div class="item">ARS</div>
+                    <div class="item">USD</div>
+                  </div>
+                </div>
+              </div>
+            <div class="four wide field">
+              <label>Tokens</label>
+              <div class="ui left icon input">
+                <i class="dollar sign icon"></i>
+                <%= text_input :transaction, :token_amount, placeholder: "0.00" %>
+              </div>
+            </div>
+            <div class="four wide field">
+              <label>Cryptomoneda</label>
               <div class="ui selection dropdown button">
                 <%= text_input :transaction, :token, type: "hidden" %>
                 <div class="default text">BTC</div>
@@ -56,31 +66,46 @@
                 </div>
               </div>
             </div>
-          </div>
-      </div>
-      <%= submit "Add", phx_disable_with: "Adding..." %>
-    </form>
+        </div>
+        <%= submit "Add", phx_disable_with: "Adding...", class: "ui green button" %>
+      </form>
     </div>
   </div>
+  <h2 class="ui inverted header">Rates</h2>
   <div class="ui segment">
-    <h2>BTC price</h2>
-    <p>$<%= to_currency(get_rates(@rates), 2) %></p>
-    <div class="ui list">
+    <div class="flex">
+      <div class="ui large horizontal scrollable list">
+      <%=for {token, rate} <- @rates do%>
+          <div class="item">
+            <i class="large circular <%=@token_names[token] %> icon"></i>
+            <div class="content w-auto">
+              <div class="ui sub header"><%= token %></div>
+              <p>$<%= to_currency(rate, 2) %></p>
+            </div>
+          </div>
+      <%end %>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="ui inverted header">Transactions</h2>
+  <div class="ui segment">
+    <div class="ui h-50 vertical scrollable list">
       <%= for transaction <- @transactions do %>
         <div class="item">
-          <div class="ui tablet stackable steps">
+          <div class="ui unstackable steps">
             <div class="step">
               <i class="dollar icon"></i>
               <div class="content">
                 <div class="title"><%= to_currency(transaction.currency_amount, 2) %></div>
-                <div class="description"><%= transaction.main_currency %></div>
+                <div class="description yelling"><%= transaction.main_currency %></div>
               </div>
             </div>
             <div class="active step">
               <i class="dollar icon"></i>
               <div class="content">
                 <div class="title"><%= to_currency(transaction.token_amount, 8) %></div>
-                <div class="description"><%= transaction.token %></div>
+                <div class="description yelling"><%= transaction.token %></div>
               </div>
             </div>
           </div>
@@ -90,32 +115,40 @@
         </div>
       <% end %>
     </div>
-
   </div>
 
   <div class="ui segment">
     <h2>Roadmap</h2>
     <ol>
       <li>
-        Select Main currency
+        ✅ Select Main currency
       </li>
       <li>
-        Log transactions with Main currency spent and tokens purchased
+        ✅ Log transactions with Main currency spent and tokens purchased
       </li>
       <li>
-        Set Binance / Coinbase API token by user
+        ✅ Set Binance / Coinbase API token by user
       </li>
       <li>
-        Fetch current cryptocurrency value in Main Currency
+        ✅ Fetch current cryptocurrency value in Main Currency
       </li>
       <li>
-        Convert value to Main Currency
+        ✅ Allow multiple tokens
       </li>
       <li>
-        Sum all token holdings in Main Currency
+      Support for sale transactions
       </li>
-      <li>Sum Main currency spent</li>
-      <li>Compare spend vs current holding in Main Currency</li>
+      <li>
+        ✅ Group transactions by token for calculations
+      </li>
+      <li>
+        ✅ Convert value to Main Currency
+      </li>
+      <li>
+        ✅ Sum all token holdings in Main Currency
+      </li>
+      <li>✅ Sum Main currency spent</li>
+      <li>✅ Compare spend vs current holding in Main Currency</li>
       <li>
         Generate daily snapshots and show bar chart
       </li>
@@ -125,3 +158,5 @@
       </li>
     </ol>
   </div>
+</div>
+<% end %>

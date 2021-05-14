@@ -14,9 +14,10 @@ defmodule CoinPortfolio.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: CoinPortfolio.PubSub},
       # Start the Endpoint (http/https)
-      CoinPortfolioWeb.Endpoint
+      CoinPortfolioWeb.Endpoint,
       # Start a worker by calling: CoinPortfolio.Worker.start_link(arg)
       # {CoinPortfolio.Worker, arg}
+      CoinPortfolio.Scheduler
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

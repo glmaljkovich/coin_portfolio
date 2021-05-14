@@ -1,2 +1,50 @@
+.main {
+    background-color: #4158D0;
+    background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+    display: flex;
+    height: auto;
+    min-height: calc(100% - 42px);
+}
 
+body, html {
+    height: 100%;
+}
 
+.phx-connected {
+    width: 100%;
+}
+
+.mb-0 {
+    margin: 0!important;
+}
+
+.h-50 {
+    height: 50%;
+}
+
+.yelling {
+    text-transform: uppercase;
+}
+
+.w-auto {
+    width: auto!important;
+}
+
+.inline {
+    display: inline-block;
+}
+
+.flex {
+    display: flex;
+}
+
+.scrollable {
+    &.horizontal {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    &.vertical {
+        overflow-y: auto;
+        white-space: nowrap;
+    }
+}

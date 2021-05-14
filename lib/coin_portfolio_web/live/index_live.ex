@@ -1,6 +1,7 @@
 defmodule CoinPortfolioWeb.IndexLive do
   use CoinPortfolioWeb, :live_view
   alias CoinPortfolio.Transactions
+  alias CoinPortfolio.Tokens
 
   @impl true
   def mount(_params, session, socket) do
@@ -8,20 +9,33 @@ defmodule CoinPortfolioWeb.IndexLive do
   end
 
   def fetch(socket, session) do
+    IO.inspect Tokens.list_rates()
     updated_socket = assign(socket, :current_user, session["current_user"])
     updated_socket = fetch_transactions_and_rates(updated_socket)
     current_user = updated_socket.assigns.current_user
-    assign(updated_socket, :transactions, Transactions.find_transactions(current_user.email))
+    if current_user do
+      assign(updated_socket, :transactions, Transactions.find_transactions(current_user.email))
+    end
   end
 
   def fetch_transactions_and_rates(socket) do
     current_user = socket.assigns.current_user
-    url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC,ETH&convert=ARS&CMC_PRO_API_KEY=#{current_user.cmc_api_key}"
-    {:ok, %HTTPoison.Response{ body: body }} = HTTPoison.get(url)
-    rates = Jason.decode!(body)
-    #rates = %{"data" => %{"BTC" => %{"quote" => %{"ARS" => %{ "price" => 5324769.000}}}}}
-    updated_socket = assign(socket, :rates, rates)
-    assign(updated_socket, :transactions, Transactions.find_transactions(current_user.email))
+    if current_user do
+      url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC,ETH,DAI,BUSD,DOGE&convert=ARS&CMC_PRO_API_KEY=#{current_user.cmc_api_key}"
+      # {:ok, %HTTPoison.Response{ body: body }} = HTTPoison.get(url)
+      # rates = get_rates(Jason.decode!(body), current_user.main_currency)
+      rates = %{
+        "BTC" => 4591940.477629449,
+        "BUSD" => 94.01303037087888,
+        "DAI" => 93.93525667424039,
+        "DOGE" => 47.91499981832192,
+        "ETH" => 342788.823086309
+      }
+      socket
+      |> assign(:rates, rates)
+      |> assign(:transactions, Transactions.find_transactions(current_user.email))
+      |> assign(:token_names, token_symbol_name_map())
+    end
   end
 
   @impl true
@@ -39,9 +53,8 @@ defmodule CoinPortfolioWeb.IndexLive do
     {:noreply, fetch_transactions_and_rates(socket)}
   end
 
-  def get_rates(rates) do
-    %{"data" => %{"BTC" => %{"quote" => %{"ARS" => %{ "price" => price}}}}} = rates
-    price
+  def get_rates(rates, main_currency) do
+    for {key, value} <- rates["data"], into: %{}, do: {key, value["quote"][main_currency]["price"]}
   end
 
   def to_currency(val, decimals) do
@@ -62,8 +75,27 @@ defmodule CoinPortfolioWeb.IndexLive do
     Enum.reduce(transactions, 0, fn transaction, total -> transaction.currency_amount + total end)
   end
 
-  def total_holdings_in_main_currency(transactions, rate) do
-    to_currency(Enum.reduce(transactions, 0, fn transaction, total -> (transaction.token_amount * rate) + total end), 2)
+  def total_holdings_in_main_currency(transactions, rates) do
+    Enum.reduce(transactions, 0.00,
+      fn transaction, total ->
+        rate = rates[String.upcase(transaction.token)]
+        (transaction.token_amount * rate) + total
+      end
+    )
+  end
+
+  def get_holdings_color(transactions, rate) do
+    holdings = total_holdings_in_main_currency(transactions, rate)
+    spent = total_main_currency_spent(transactions)
+    if holdings > spent, do: "green", else: "red"
+  end
+
+  def token_symbol_name_map do
+    %{
+      "ETH" => "ethereum",
+      "BTC" => "bitcoin",
+      "DAI" => "dai"
+    }
   end
 
 end

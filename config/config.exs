@@ -20,11 +20,18 @@ config :coin_portfolio, CoinPortfolioWeb.Endpoint,
 
 # Configures Elixir's Logger
 config :logger, :console,
+  level: :debug,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+config :coin_portfolio, CoinPortfolio.Scheduler,
+  jobs: [
+    # Every 30 minutes
+    {"*/30 * * * *",   fn -> CoinPortfolio.Scheduler.FetchRates.run() end},
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

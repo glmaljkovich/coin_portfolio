@@ -1,11 +1,11 @@
 
-<div class="ui menu">
+<div class="ui menu mb-0">
   <div class="header item">
-    <i class="bitcoin icon"></i> Coin Portfolio
+    <a href="/"><i class="large bitcoin icon"></i> Coin Portfolio</a>
   </div>
   <div class="menu right">
     <%= if @current_user do %>
-      <a class="item" href="#"><i class="user circle icon"></i> <%=@current_user.email%></a>
+      <a class="item" href="#"><i class="large user circle icon"></i> <%=@current_user.name%></a>
       <%= link "Settings", to: Routes.user_settings_path(@conn, :edit), class: "item" %>
       <%= link "Log out", to: Routes.user_session_path(@conn, :delete), method: :delete, class: "item" %>
     <% else %>
