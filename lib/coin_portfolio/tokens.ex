@@ -21,6 +21,23 @@ defmodule CoinPortfolio.Tokens do
     Repo.all(Rates)
   end
 
+  def latest_rates do
+    latest_rates_query = from r1 in Rates,
+      select: %{token: r1.token, currency: r1.currency, max_timestamp: max(r1.timestamp)},
+      group_by: [r1.token, r1.currency]
+    query = from(r2 in Rates, inner_join: r1 in subquery(latest_rates_query), on: r1.token == r2.token and r1.currency == r2.currency and r1.max_timestamp == r2.timestamp )
+    Repo.all(query)
+    # Repo.query("""
+    # select *
+    # from rates r
+    # inner join (
+    #     select token, currency, max(timestamp) as latest
+    #     from rates
+    #     group by token, currency
+    # ) latest_rates on r.token = latest_rates.token and r.currency = latest_rates.currency and r.timestamp = latest_rates.latest
+    # """)
+  end
+
   @doc """
   Gets a single rates.
 

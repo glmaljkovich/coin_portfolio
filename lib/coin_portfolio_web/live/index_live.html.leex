@@ -1,42 +1,55 @@
 <%=if @current_user do %>
 <div>
-<h2 class="ui inverted center aligned icon header">
-    <i class="circular users icon"></i>
-    <%= @current_user.name %>
-</h2>
+<div class="ui centered grid mv-1">
+  <div class="ui center aligned circular segment">
+    <div class="ui small statistic">
+      <div class="value">
+        <%=if String.starts_with?(holdings_percentage(@transactions, @rates), "-") do %>
+          <i class="small red caret down icon"></i>
+        <%else %>
+          <i class="small green caret up icon"></i>
+        <%end %>
+        <i class=""></i>
+        <%= holdings_percentage(@transactions, @rates) %>%
+      </div>
+    </div>
+  </div>
+</div>
   <div class="ui container">
     <div class="ui center aligned green segment">
       <div class="ui grey statistic">
         <div class="value">
-          <i class="tiny dollar sign icon"></i><%=to_currency(total_main_currency_spent(@transactions), 2) %>
+          <i class="tiny dollar sign icon"></i><%=to_precision(total_main_currency_spent(@transactions), 2) %>
         </div>
         <div class="label">
           <%= @current_user.main_currency %> spent
         </div>
       </div>
+      <i class="huge disabled right angle icon"></i>
       <div class="ui <%= get_holdings_color @transactions, @rates %> statistic">
         <div class="value">
-          <i class="tiny dollar sign icon"></i><%=to_currency(total_holdings_in_main_currency(@transactions, @rates), 2) %>
+          <i class="tiny dollar sign icon"></i><%=to_precision(total_holdings_in_main_currency(@transactions, @rates), 2) %>
         </div>
         <div class="label">
           <%= @current_user.main_currency %> holdings
         </div>
       </div>
     </div>
+    <!-- Add Transaction-->
     <h2 class="ui inverted header">Add Transaction</h2>
     <div class="ui blue segment">
       <form action="#" phx-submit="add">
         <div class="ui form">
           <div class="equal width fields">
             <div class="four wide field">
-              <label>Monto invertido</label>
+              <label>Amount</label>
               <div class="ui left icon input">
                 <i class="dollar sign icon"></i>
                 <%= text_input :transaction, :currency_amount, placeholder: "0.00" %>
               </div>
             </div>
               <div class="four wide field">
-                <label>Moneda</label>
+                <label>Currency</label>
                 <div class="ui selection dropdown button">
                   <%= text_input :transaction, :main_currency, type: "hidden" %>
                   <div class="default text">ARS</div>
@@ -55,7 +68,7 @@
               </div>
             </div>
             <div class="four wide field">
-              <label>Cryptomoneda</label>
+              <label>Cryptocurrency</label>
               <div class="ui selection dropdown button">
                 <%= text_input :transaction, :token, type: "hidden" %>
                 <div class="default text">BTC</div>
@@ -63,9 +76,19 @@
                 <div class="menu">
                   <div class="item">BTC</div>
                   <div class="item">ETH</div>
+                  <div class="item">DAI</div>
+                  <div class="item">DOGE</div>
                 </div>
               </div>
             </div>
+        </div>
+        <div class="fields">
+          <div class="four wide field">
+            <label>Date</label>
+            <div class="ui input">
+              <%=date_input :transaction, :date %>
+            </div>
+          </div>
         </div>
         <%= submit "Add", phx_disable_with: "Adding...", class: "ui green button" %>
       </form>
@@ -80,7 +103,7 @@
             <i class="large circular <%=@token_names[token] %> icon"></i>
             <div class="content w-auto">
               <div class="ui sub header"><%= token %></div>
-              <p>$<%= to_currency(rate, 2) %></p>
+              <p>$<%= to_precision(rate, 2) %></p>
             </div>
           </div>
       <%end %>
@@ -90,34 +113,57 @@
 
   <h2 class="ui inverted header">Transactions</h2>
   <div class="ui segment">
-    <div class="ui h-50 vertical scrollable list">
-      <%= for transaction <- @transactions do %>
-        <div class="item">
-          <div class="ui unstackable steps">
-            <div class="step">
-              <i class="dollar icon"></i>
-              <div class="content">
-                <div class="title"><%= to_currency(transaction.currency_amount, 2) %></div>
-                <div class="description yelling"><%= transaction.main_currency %></div>
+    <table class="ui unstackable table">
+      <thead>
+        <tr>
+          <!-- logo -->
+          <th>Token</th>
+          <!-- (buy/sell/trade) -->
+          <th>Type</th>
+          <!-- (shows spend and deposited values one on top of the other) -->
+          <!--
+            +0.003 ETH
+            10.000 ARS
+          -->
+          <th>Amount</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%=for transaction <- @transactions do %>
+        <tr>
+          <td>
+            <i class="large circular <%=@token_names[String.upcase(transaction.token)] %> icon"></i>
+          </td>
+          <td>
+            <div class="ui green label">buy</div>
+          </td>
+          <td class="">
+            <div class="ui list">
+              <div class="item">
+                <h5 class="ui green header">
+                  +<%= transaction.token_amount %> <%= String.upcase(transaction.token) %>
+                </h5>
               </div>
+              <div class="item"><%= to_precision(transaction.currency_amount, 2) %> <%= String.upcase(transaction.main_currency) %></div>
             </div>
-            <div class="active step">
-              <i class="dollar icon"></i>
-              <div class="content">
-                <div class="title"><%= to_currency(transaction.token_amount, 8) %></div>
-                <div class="description yelling"><%= transaction.token %></div>
-              </div>
-            </div>
-          </div>
-          <button class="ui icon button" phx-click="delete" phx-value-transactionId="<%=transaction.id %>">
-            <i class="close icon"></i>
-          </button>
-        </div>
-      <% end %>
-    </div>
+          </td>
+          <td>
+            <div class=""><%= pretty_transaction_date(transaction.date) %></div>
+          </td>
+          <td>
+            <button class="ui basic icon button" phx-click="delete" phx-value-transactionId="<%=transaction.id %>">
+              <i class="trash icon"></i>
+            </button>
+          </td>
+        </tr>
+        <%end %>
+      </tbody>
+    </table>
   </div>
 
-  <div class="ui segment">
+  <div class="ui segment mb-1">
     <h2>Roadmap</h2>
     <ol>
       <li>

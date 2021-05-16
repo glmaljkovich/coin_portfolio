@@ -3,7 +3,7 @@ defmodule CoinPortfolio.Scheduler.FetchRates do
   def run() do
     IO.puts "Fetchin rates..."
     cmc_api_key = System.get_env("CMC_API_KEY")
-    url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC,ETH,DAI,BUSD,DOGE&convert=ARS&CMC_PRO_API_KEY=#{cmc_api_key}"
+    url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC,ETH,DAI,BUSD,DOGE&convert=ARS,USD&CMC_PRO_API_KEY=#{cmc_api_key}"
     {:ok, %HTTPoison.Response{ body: body }} = HTTPoison.get(url)
     IO.puts "Decoding body"
     rates = Jason.decode!(body)

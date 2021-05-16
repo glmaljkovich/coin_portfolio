@@ -8,6 +8,7 @@ defmodule CoinPortfolio.Transactions.Transaction do
     field :token, :string
     field :token_amount, :float
     field :user, :string
+    field :date, :string
 
     timestamps()
   end

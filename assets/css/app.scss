@@ -1,7 +1,7 @@
 .main {
     background-color: #4158D0;
     background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
-    display: flex;
+    display: flow-root;
     height: auto;
     min-height: calc(100% - 42px);
 }
@@ -16,6 +16,15 @@ body, html {
 
 .mb-0 {
     margin: 0!important;
+}
+
+.mb-1 {
+    margin-bottom: 1rem!important;
+}
+
+.mv-1 {
+    margin-top: 1rem!important;
+    margin-bottom: 1rem!important;
 }
 
 .h-50 {
@@ -47,4 +56,28 @@ body, html {
         overflow-y: auto;
         white-space: nowrap;
     }
+}
+
+.busd::before {
+    content: "B";
+    /* display: block; */
+    color: black;
+    width: 20px;
+    font-family: sans-serif;
+}
+
+.dai::before {
+    content: "D";
+    /* display: block; */
+    color: black;
+    width: 20px;
+    font-family: sans-serif;
+}
+
+.dogecoin::before {
+    content: "D";
+    /* display: block; */
+    color: black;
+    width: 20px;
+    font-family: sans-serif;
 }

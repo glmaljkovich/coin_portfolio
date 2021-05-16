@@ -3,13 +3,15 @@ defmodule CoinPortfolioWeb.IndexLive do
   alias CoinPortfolio.Transactions
   alias CoinPortfolio.Tokens
 
+  @ars_taxes_factor 1.7498
+  @ars "ARS"
+
   @impl true
   def mount(_params, session, socket) do
     {:ok, fetch(socket, session)}
   end
 
   def fetch(socket, session) do
-    IO.inspect Tokens.list_rates()
     updated_socket = assign(socket, :current_user, session["current_user"])
     updated_socket = fetch_transactions_and_rates(updated_socket)
     current_user = updated_socket.assigns.current_user
@@ -21,16 +23,15 @@ defmodule CoinPortfolioWeb.IndexLive do
   def fetch_transactions_and_rates(socket) do
     current_user = socket.assigns.current_user
     if current_user do
-      url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC,ETH,DAI,BUSD,DOGE&convert=ARS&CMC_PRO_API_KEY=#{current_user.cmc_api_key}"
-      # {:ok, %HTTPoison.Response{ body: body }} = HTTPoison.get(url)
-      # rates = get_rates(Jason.decode!(body), current_user.main_currency)
-      rates = %{
-        "BTC" => 4591940.477629449,
-        "BUSD" => 94.01303037087888,
-        "DAI" => 93.93525667424039,
-        "DOGE" => 47.91499981832192,
-        "ETH" => 342788.823086309
-      }
+      rates = get_rates(Tokens.latest_rates(), current_user.main_currency)
+      # rates = %{
+      #   "BTC" => 4591940.477629449,
+      #   "BUSD" => 94.01303037087888,
+      #   "DAI" => 93.93525667424039,
+      #   "DOGE" => 47.91499981832192,
+      #   "ETH" => 342788.823086309
+      # }
+      rates = for {token, rate} <- rates, into: %{}, do: {token, (if current_user.main_currency == @ars, do: rate * @ars_taxes_factor, else: rate)}
       socket
       |> assign(:rates, rates)
       |> assign(:transactions, Transactions.find_transactions(current_user.email))
@@ -42,6 +43,7 @@ defmodule CoinPortfolioWeb.IndexLive do
   def handle_event("add", %{"transaction" => transaction}, socket) do
     current_user = socket.assigns.current_user
     transaction_augmented = Map.merge(key_to_atom(transaction), %{:user => current_user.email})
+    transaction_augmented = Map.put(transaction_augmented, :token, String.upcase(transaction_augmented.token))
     Transactions.create_transaction(transaction_augmented)
 
     {:noreply, fetch_transactions_and_rates(socket)}
@@ -53,11 +55,11 @@ defmodule CoinPortfolioWeb.IndexLive do
     {:noreply, fetch_transactions_and_rates(socket)}
   end
 
-  def get_rates(rates, main_currency) do
-    for {key, value} <- rates["data"], into: %{}, do: {key, value["quote"][main_currency]["price"]}
+  def get_rates(rates, _main_currency) do
+    for rate <- rates, into: %{}, do: {rate.token, rate.rate}
   end
 
-  def to_currency(val, decimals) do
+  def to_precision(val, decimals) do
     Float.to_string(val, decimals: decimals)
   end
 
@@ -94,8 +96,22 @@ defmodule CoinPortfolioWeb.IndexLive do
     %{
       "ETH" => "ethereum",
       "BTC" => "bitcoin",
-      "DAI" => "dai"
+      "DAI" => "dai",
+      "DOGE" => "dogecoin",
+      "BUSD" => "busd"
     }
+  end
+
+  def holdings_percentage(transactions, rates) do
+    holdings = total_holdings_in_main_currency(transactions, rates)
+    spent = total_main_currency_spent(transactions)
+    change = holdings - spent
+    to_precision(change / spent * 100, 1)
+  end
+
+  def pretty_transaction_date(date) do
+    {:ok, datetime, _ignore} = DateTime.from_iso8601(date)
+    Calendar.strftime(datetime, "%a, %B %d %Y")
   end
 
 end
