@@ -7,6 +7,7 @@ defmodule CoinPortfolio.Transactions do
   alias CoinPortfolio.Repo
 
   alias CoinPortfolio.Transactions.Transaction
+  alias CoinPortfolio.EnumUtils
 
   @doc """
   Returns the list of transactions.
@@ -21,8 +22,19 @@ defmodule CoinPortfolio.Transactions do
     Repo.all(Transaction)
   end
 
+  @doc """
+  Returns the list of transactions for a user.
+  """
   def find_transactions(user) do
     query = from transaction in Transaction, where: transaction.user == ^user
+    Repo.all(query)
+  end
+
+  def holdings_by_token(user) do
+    query = from t in Transaction,
+      select: %{token: t.token, user: t.user, total: sum(t.token_amount)},
+      where: t.user == ^user.email,
+      group_by: [:token, :user]
     Repo.all(query)
   end
 
@@ -54,10 +66,20 @@ defmodule CoinPortfolio.Transactions do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_transaction(attrs \\ %{}) do
+  def create_transaction(attrs \\ %{}, current_user) do
+    cleaned_attrs = clean_transaction(attrs, current_user)
     %Transaction{}
-    |> Transaction.changeset(attrs)
+    |> Transaction.changeset(cleaned_attrs)
     |> Repo.insert()
+  end
+
+  def clean_transaction(attrs, current_user) do
+    transaction = EnumUtils.key_to_atom(attrs)
+    transaction
+    |> Map.merge(%{:user => current_user.email})
+    |> Map.put(:token, String.upcase(transaction.token))
+    |> Map.put(:currency, String.upcase(transaction.currency))
+    |> Map.put(:date, "#{transaction.date}T00:00:00Z")
   end
 
   @doc """

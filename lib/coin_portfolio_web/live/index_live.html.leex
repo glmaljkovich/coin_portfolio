@@ -15,7 +15,7 @@
     </div>
   </div>
 </div>
-  <div class="ui container">
+  <div class="ui desktop-padding container">
     <div class="ui center aligned green segment">
       <div class="ui grey statistic">
         <div class="value">
@@ -39,18 +39,38 @@
     <h2 class="ui inverted header">Add Transaction</h2>
     <div class="ui blue segment">
       <form action="#" phx-submit="add">
-        <div class="ui form">
-          <div class="equal width fields">
-            <div class="four wide field">
+        <div class="ui equal width form">
+          <div class="fields">
+            <div class="field">
+              <label>Type</label>
+              <div class="ui compact selection dropdown button">
+                <%= text_input :transaction, :type, type: "hidden" %>
+                <div class="default text">buy</div>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                  <div class="item">buy</div>
+                  <div class="item">sell</div>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Date</label>
+              <div class="ui input">
+                <%=date_input :transaction, :date %>
+              </div>
+            </div>
+          </div>
+          <div class="fields">
+            <div class="field">
               <label>Amount</label>
               <div class="ui left icon input">
                 <i class="dollar sign icon"></i>
                 <%= text_input :transaction, :currency_amount, placeholder: "0.00" %>
               </div>
             </div>
-              <div class="four wide field">
+              <div class="field">
                 <label>Currency</label>
-                <div class="ui selection dropdown button">
+                <div class="ui compact selection dropdown button">
                   <%= text_input :transaction, :main_currency, type: "hidden" %>
                   <div class="default text">ARS</div>
                   <i class="dropdown icon"></i>
@@ -60,16 +80,16 @@
                   </div>
                 </div>
               </div>
-            <div class="four wide field">
+            <div class="field">
               <label>Tokens</label>
               <div class="ui left icon input">
                 <i class="dollar sign icon"></i>
                 <%= text_input :transaction, :token_amount, placeholder: "0.00" %>
               </div>
             </div>
-            <div class="four wide field">
+            <div class="field">
               <label>Cryptocurrency</label>
-              <div class="ui selection dropdown button">
+              <div class="ui compact selection dropdown button">
                 <%= text_input :transaction, :token, type: "hidden" %>
                 <div class="default text">BTC</div>
                 <i class="dropdown icon"></i>
@@ -82,18 +102,11 @@
               </div>
             </div>
         </div>
-        <div class="fields">
-          <div class="four wide field">
-            <label>Date</label>
-            <div class="ui input">
-              <%=date_input :transaction, :date %>
-            </div>
-          </div>
-        </div>
         <%= submit "Add", phx_disable_with: "Adding...", class: "ui green button" %>
       </form>
     </div>
   </div>
+  <!-- Rates -->
   <h2 class="ui inverted header">Rates</h2>
   <div class="ui segment">
     <div class="flex">
@@ -110,21 +123,14 @@
       </div>
     </div>
   </div>
-
+  <!-- Transactions -->
   <h2 class="ui inverted header">Transactions</h2>
-  <div class="ui segment">
-    <table class="ui unstackable table">
+  <div class="ui horizontal scrollable p-0 segment">
+    <table class="ui selectable unstackable table">
       <thead>
         <tr>
-          <!-- logo -->
           <th>Token</th>
-          <!-- (buy/sell/trade) -->
           <th>Type</th>
-          <!-- (shows spend and deposited values one on top of the other) -->
-          <!--
-            +0.003 ETH
-            10.000 ARS
-          -->
           <th>Amount</th>
           <th>Date</th>
           <th>Actions</th>
@@ -135,16 +141,27 @@
         <tr>
           <td>
             <i class="large circular <%=@token_names[String.upcase(transaction.token)] %> icon"></i>
+            <span class="capitalize"><%=@token_names[String.upcase(transaction.token)] %></span>
           </td>
           <td>
-            <div class="ui green label">buy</div>
+            <%=if transaction.type == "buy" do %>
+              <div class="ui green label">buy</div>
+            <%else %>
+              <div class="ui red label">sell</div>
+            <%end %>
           </td>
           <td class="">
             <div class="ui list">
               <div class="item">
-                <h5 class="ui green header">
-                  +<%= transaction.token_amount %> <%= String.upcase(transaction.token) %>
-                </h5>
+                <%=if transaction.type == "buy" do %>
+                  <h5 class="ui green header">
+                    +<%= transaction.token_amount %> <%= String.upcase(transaction.token) %>
+                  </h5>
+                <%else %>
+                  <h5 class="ui red header">
+                    -<%= transaction.token_amount %> <%= String.upcase(transaction.token) %>
+                  </h5>
+                <%end %>
               </div>
               <div class="item"><%= to_precision(transaction.currency_amount, 2) %> <%= String.upcase(transaction.main_currency) %></div>
             </div>
@@ -162,47 +179,86 @@
       </tbody>
     </table>
   </div>
+  <!-- Assets -->
+  <h2 class="ui inverted header">Assets</h2>
+  <div class="ui p-0 segment">
+    <table class="ui selectable unstackable table">
+      <thead>
+        <tr>
+          <th>Token</th>
+          <th>Price</th>
+          <th>Holdings</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%=for asset <- @assets do %>
+        <tr>
+          <td>
+            <i class="large circular <%=@token_names[String.upcase(asset.token)] %> icon"></i>
+            <span class="capitalize"><%=@token_names[String.upcase(asset.token)] %><span>
+          </td>
+          <td>
+            $<%= to_precision(@rates[String.upcase(asset.token)], 2) %> <%= String.upcase(@current_user.main_currency) %>
+          </td>
+          <td>
+            <div class="ui list">
+              <div class="item">
+                <h5 class="ui header">
+                  <%= to_precision(asset.total, 8) %> <%= String.upcase(asset.token) %>
+                </h5>
+              </div>
+              <div class="item">$<%= token_to_main_currency(asset, @rates) %> <%= String.upcase(@current_user.main_currency) %></div>
+            </div>
+          </td>
+        </tr>
+        <%end %>
+      </tbody>
+    </table>
+  </div>
 
   <div class="ui segment mb-1">
     <h2>Roadmap</h2>
-    <ol>
-      <li>
+    <div class="ui relaxed divided list">
+      <li class="item">
+        ✅ Holdings by token
+      </li>
+      <li class="item">
         ✅ Select Main currency
       </li>
-      <li>
+      <li class="item">
         ✅ Log transactions with Main currency spent and tokens purchased
       </li>
-      <li>
+      <li class="item">
         ✅ Set Binance / Coinbase API token by user
       </li>
-      <li>
+      <li class="item">
         ✅ Fetch current cryptocurrency value in Main Currency
       </li>
-      <li>
+      <li class="item">
         ✅ Allow multiple tokens
       </li>
-      <li>
-      Support for sale transactions
+      <li class="item">
+        ✅ Support for sale transactions
       </li>
-      <li>
+      <li class="item">
         ✅ Group transactions by token for calculations
       </li>
-      <li>
+      <li class="item">
         ✅ Convert value to Main Currency
       </li>
-      <li>
+      <li class="item">
         ✅ Sum all token holdings in Main Currency
       </li>
-      <li>✅ Sum Main currency spent</li>
-      <li>✅ Compare spend vs current holding in Main Currency</li>
-      <li>
+      <li class="item">✅ Sum Main currency spent</li>
+      <li class="item">✅ Compare spend vs current holding in Main Currency</li>
+      <li class="item">
         Generate daily snapshots and show bar chart
       </li>
-      <li>
+      <li class="item">
         Allow fiat currency conversion of spent and current holdings. <br>
        https://v6.exchangerate-api.com/v6/f5c77c453f31e6a472f5bf68/latest/ARS
       </li>
-    </ol>
+    </div>
   </div>
 </div>
 <% end %>

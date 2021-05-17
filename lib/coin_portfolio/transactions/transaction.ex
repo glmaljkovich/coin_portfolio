@@ -9,6 +9,7 @@ defmodule CoinPortfolio.Transactions.Transaction do
     field :token_amount, :float
     field :user, :string
     field :date, :string
+    field :type, :string
 
     timestamps()
   end
@@ -16,7 +17,7 @@ defmodule CoinPortfolio.Transactions.Transaction do
   @doc false
   def changeset(transaction, attrs) do
     transaction
-    |> cast(attrs, [:user, :main_currency, :currency_amount, :token, :token_amount])
-    |> validate_required([:user, :main_currency, :currency_amount, :token, :token_amount])
+    |> cast(attrs, [:user, :main_currency, :currency_amount, :token, :token_amount, :date, :type])
+    |> validate_required([:user, :main_currency, :currency_amount, :token, :token_amount, :date, :type])
   end
 end

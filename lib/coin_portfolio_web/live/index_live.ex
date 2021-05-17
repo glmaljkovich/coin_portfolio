@@ -24,27 +24,18 @@ defmodule CoinPortfolioWeb.IndexLive do
     current_user = socket.assigns.current_user
     if current_user do
       rates = get_rates(Tokens.latest_rates(), current_user.main_currency)
-      # rates = %{
-      #   "BTC" => 4591940.477629449,
-      #   "BUSD" => 94.01303037087888,
-      #   "DAI" => 93.93525667424039,
-      #   "DOGE" => 47.91499981832192,
-      #   "ETH" => 342788.823086309
-      # }
-      rates = for {token, rate} <- rates, into: %{}, do: {token, (if current_user.main_currency == @ars, do: rate * @ars_taxes_factor, else: rate)}
       socket
       |> assign(:rates, rates)
       |> assign(:transactions, Transactions.find_transactions(current_user.email))
       |> assign(:token_names, token_symbol_name_map())
+      |> assign(:assets, Transactions.holdings_by_token(current_user))
     end
   end
 
   @impl true
   def handle_event("add", %{"transaction" => transaction}, socket) do
     current_user = socket.assigns.current_user
-    transaction_augmented = Map.merge(key_to_atom(transaction), %{:user => current_user.email})
-    transaction_augmented = Map.put(transaction_augmented, :token, String.upcase(transaction_augmented.token))
-    Transactions.create_transaction(transaction_augmented)
+    Transactions.create_transaction(transaction, current_user)
 
     {:noreply, fetch_transactions_and_rates(socket)}
   end
@@ -55,33 +46,41 @@ defmodule CoinPortfolioWeb.IndexLive do
     {:noreply, fetch_transactions_and_rates(socket)}
   end
 
-  def get_rates(rates, _main_currency) do
-    for rate <- rates, into: %{}, do: {rate.token, rate.rate}
+  def get_rates(rates, main_currency) do
+    extracted_rates = for rate <- rates, into: %{}, do: {rate.token, rate.rate}
+    for {token, rate} <- extracted_rates,
+      into: %{},
+      do: {
+        token,
+        (if main_currency == @ars, do: rate * @ars_taxes_factor, else: rate)
+      }
   end
 
   def to_precision(val, decimals) do
     Float.to_string(val, decimals: decimals)
   end
 
-  def key_to_atom(map) do
-    Enum.reduce(map, %{}, fn
-      # String.to_existing_atom saves us from overloading the VM by
-      # creating too many atoms. It'll always succeed because all the fields
-      # in the database already exist as atoms at runtime.
-      {key, value}, acc when is_atom(key) -> Map.put(acc, key, value)
-      {key, value}, acc when is_binary(key) -> Map.put(acc, String.to_existing_atom(key), value)
-    end)
-  end
-
   def total_main_currency_spent(transactions) do
-    Enum.reduce(transactions, 0, fn transaction, total -> transaction.currency_amount + total end)
+    Enum.reduce(transactions, 0,
+      fn transaction, total ->
+        if transaction.type == "buy" do
+          transaction.currency_amount + total
+        else
+          total - transaction.currency_amount
+        end
+      end
+    )
   end
 
   def total_holdings_in_main_currency(transactions, rates) do
     Enum.reduce(transactions, 0.00,
       fn transaction, total ->
-        rate = rates[String.upcase(transaction.token)]
-        (transaction.token_amount * rate) + total
+        if transaction.type == "buy" do
+          rate = rates[String.upcase(transaction.token)]
+          (transaction.token_amount * rate) + total
+        else
+          total
+        end
       end
     )
   end
@@ -112,6 +111,10 @@ defmodule CoinPortfolioWeb.IndexLive do
   def pretty_transaction_date(date) do
     {:ok, datetime, _ignore} = DateTime.from_iso8601(date)
     Calendar.strftime(datetime, "%a, %B %d %Y")
+  end
+
+  def token_to_main_currency(asset, rates) do
+    to_precision(asset.total * rates[asset.token], 2)
   end
 
 end
