@@ -31,10 +31,21 @@ defmodule CoinPortfolio.Transactions do
   end
 
   def holdings_by_token(user) do
-    query = from t in Transaction,
-      select: %{token: t.token, user: t.user, total: sum(t.token_amount)},
-      where: t.user == ^user.email,
+    buy_transactions = from t in Transaction,
+      select: %{token: t.token, user: t.user, buy_total: sum(t.token_amount)},
+      where: t.user == ^user.email and t.type == "buy",
       group_by: [:token, :user]
+
+    sell_transactions = from t in Transaction,
+      select: %{token: t.token, user: t.user, sell_total: sum(t.token_amount)},
+      where: t.user == ^user.email and t.type == "sell",
+      group_by: [:token, :user]
+
+    query = from t1 in subquery(buy_transactions),
+      left_join: t2 in subquery(sell_transactions),
+      on: t1.token == t2.token and t1.user == t2.user,
+      select: %{token: t1.token, user: t1.user, total: t1.buy_total - coalesce(t2.sell_total, 0.00)}
+
     Repo.all(query)
   end
 
