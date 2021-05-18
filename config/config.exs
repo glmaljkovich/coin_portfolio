@@ -31,6 +31,8 @@ config :coin_portfolio, CoinPortfolio.Scheduler,
   jobs: [
     # Every 30 minutes
     {"*/30 * * * *",   fn -> CoinPortfolio.Scheduler.FetchRates.run() end},
+    # Every day at midnight
+    {"0 0 * * *",   fn -> CoinPortfolio.Scheduler.BalanceSnapshot.run() end},
   ]
 
 # Import environment specific config. This must remain at the bottom

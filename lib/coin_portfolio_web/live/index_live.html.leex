@@ -181,7 +181,7 @@
   </div>
   <!-- Assets -->
   <h2 class="ui inverted header">Assets</h2>
-  <div class="ui p-0 segment">
+  <div class="ui p-0 segment mb-1">
     <table class="ui selectable unstackable table">
       <thead>
         <tr>
@@ -216,49 +216,36 @@
     </table>
   </div>
 
-  <div class="ui segment mb-1">
-    <h2>Roadmap</h2>
-    <div class="ui relaxed divided list">
-      <li class="item">
-        ✅ Holdings by token
-      </li>
-      <li class="item">
-        ✅ Select Main currency
-      </li>
-      <li class="item">
-        ✅ Log transactions with Main currency spent and tokens purchased
-      </li>
-      <li class="item">
-        ✅ Set Binance / Coinbase API token by user
-      </li>
-      <li class="item">
-        ✅ Fetch current cryptocurrency value in Main Currency
-      </li>
-      <li class="item">
-        ✅ Allow multiple tokens
-      </li>
-      <li class="item">
-        ✅ Support for sale transactions
-      </li>
-      <li class="item">
-        ✅ Group transactions by token for calculations
-      </li>
-      <li class="item">
-        ✅ Convert value to Main Currency
-      </li>
-      <li class="item">
-        ✅ Sum all token holdings in Main Currency
-      </li>
-      <li class="item">✅ Sum Main currency spent</li>
-      <li class="item">✅ Compare spend vs current holding in Main Currency</li>
-      <li class="item">
-        Generate daily snapshots and show bar chart
-      </li>
-      <li class="item">
-        Allow fiat currency conversion of spent and current holdings. <br>
-       https://v6.exchangerate-api.com/v6/f5c77c453f31e6a472f5bf68/latest/ARS
-      </li>
-    </div>
+  <h2 class="ui inverted header">Balance history</h2>
+  <div class="ui p-0 segment mb-1">
+    <table class="ui selectable unstackable table">
+      <thead>
+        <tr>
+          <th>Spent</th>
+          <th>Holdings</th>
+          <th>Change</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%=for balance <- @balance_history do %>
+        <tr>
+          <td>
+            $<%= to_precision(balance.spent, 2) %> <%= String.upcase(@current_user.main_currency) %>
+          </td>
+          <td>
+            $<%= to_precision(balance.holdings, 2) %> <%= String.upcase(@current_user.main_currency) %>
+          </td>
+          <td>
+            <%= to_precision(balance.change_percentage, 2) %>%
+          </td>
+          <td>
+            <%= pretty_transaction_date(balance.timestamp) %>
+          </td>
+        </tr>
+        <%end %>
+      </tbody>
+    </table>
   </div>
 </div>
 <% end %>

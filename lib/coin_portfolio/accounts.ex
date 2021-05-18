@@ -59,6 +59,14 @@ defmodule CoinPortfolio.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+
+  @doc """
+  Gets all user emails in the db
+  """
+  def list_users do
+    Repo.all(User)
+  end
+
   ## User registration
 
   @doc """
