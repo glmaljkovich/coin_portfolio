@@ -80,11 +80,11 @@
           yaxis: {
             labels: {
               formatter: function (val) {
-                return "<%= @current_user.main_currency %> " + val.toFixed(0);
+                return val.toFixed(0);
               },
             },
             title: {
-              text: 'Price'
+              text: 'Holdings (<%= @current_user.main_currency %>)'
             },
           },
           xaxis: {
