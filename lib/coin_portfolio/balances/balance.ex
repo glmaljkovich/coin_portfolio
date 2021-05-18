@@ -2,6 +2,7 @@ defmodule CoinPortfolio.Balances.Balance do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Poison.Encoder, only: [:change_percentage, :holdings, :timestamp, :spent, :user]}
   schema "balances" do
     field :change_percentage, :float
     field :holdings, :float

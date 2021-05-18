@@ -72,4 +72,15 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
   def token_to_main_currency(asset, rates) do
     to_precision(asset.total * rates[asset.token], 2)
   end
+
+  def balance_history_to_chart_data(balance_history) do
+    balance_history
+    |> Enum.map(
+      fn balance ->
+        {:ok, date, _ignore} = DateTime.from_iso8601(balance.timestamp)
+        %{"x" => DateTime.to_unix(date, :milliseconds), "y" => balance.holdings}
+      end
+    )
+    |> Poison.encode!()
+  end
 end

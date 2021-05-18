@@ -35,6 +35,79 @@
         </div>
       </div>
     </div>
+
+  <!-- Balances -->
+  <h2 class="ui inverted header">Balance history</h2>
+  <div class="ui p-0 segment mb-1">
+    <div id="balance"></div>
+    <script defer>
+      setTimeout(() => {
+        var dates = JSON.parse('<%= raw balance_history_to_chart_data(@balance_history) %>')
+        var options = {
+            series: [{
+            name: 'Balance',
+            data: dates
+          }],
+            chart: {
+            type: 'area',
+            stacked: false,
+            height: 350,
+            zoom: {
+              type: 'x',
+              enabled: true,
+              autoScaleYaxis: true
+            },
+            toolbar: {
+              autoSelected: 'zoom'
+            }
+          },
+          dataLabels: {
+            enabled: false
+          },
+          markers: {
+            size: 0,
+          },
+          fill: {
+            type: 'gradient',
+            gradient: {
+              shadeIntensity: 1,
+              inverseColors: false,
+              opacityFrom: 0.5,
+              opacityTo: 0,
+              stops: [0, 90, 100]
+            },
+          },
+          yaxis: {
+            labels: {
+              formatter: function (val) {
+                return "<%= @current_user.main_currency %> " + val.toFixed(0);
+              },
+            },
+            title: {
+              text: 'Price'
+            },
+          },
+          xaxis: {
+            type: 'datetime',
+            title: {
+              text: 'Time'
+            },
+          },
+          tooltip: {
+            shared: false,
+            y: {
+              formatter: function (val) {
+                return "<%= @current_user.main_currency %> " + val.toFixed(0)
+              }
+            }
+          }
+        };
+        var chart = new ApexCharts(document.querySelector("#balance"), options);
+        chart.render();
+      }, 500);
+    </script>
+  </div>
+
     <!-- Add Transaction-->
     <h2 class="ui inverted header">Add Transaction</h2>
     <div class="ui blue segment">
@@ -216,36 +289,5 @@
     </table>
   </div>
 
-  <h2 class="ui inverted header">Balance history</h2>
-  <div class="ui p-0 segment mb-1">
-    <table class="ui selectable unstackable table">
-      <thead>
-        <tr>
-          <th>Spent</th>
-          <th>Holdings</th>
-          <th>Change</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%=for balance <- @balance_history do %>
-        <tr>
-          <td>
-            $<%= to_precision(balance.spent, 2) %> <%= String.upcase(@current_user.main_currency) %>
-          </td>
-          <td>
-            $<%= to_precision(balance.holdings, 2) %> <%= String.upcase(@current_user.main_currency) %>
-          </td>
-          <td>
-            <%= to_precision(balance.change_percentage, 2) %>%
-          </td>
-          <td>
-            <%= pretty_transaction_date(balance.timestamp) %>
-          </td>
-        </tr>
-        <%end %>
-      </tbody>
-    </table>
-  </div>
 </div>
 <% end %>
