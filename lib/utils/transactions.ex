@@ -83,4 +83,8 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
     )
     |> Poison.encode!()
   end
+
+  def to_money(amount, current_user) do
+    Money.to_string(Money.parse!(amount, String.to_atom(current_user.main_currency)), symbol: false)
+  end
 end

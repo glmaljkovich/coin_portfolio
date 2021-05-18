@@ -19,7 +19,7 @@
     <div class="ui center aligned green segment">
       <div class="ui grey statistic">
         <div class="value">
-          <i class="tiny dollar sign icon"></i><%=to_precision(total_main_currency_spent(@transactions), 2) %>
+          <i class="tiny dollar sign icon"></i><%=to_money(total_main_currency_spent(@transactions), @current_user) %>
         </div>
         <div class="label">
           <%= @current_user.main_currency %> spent
@@ -28,7 +28,7 @@
       <i class="huge disabled right angle icon"></i>
       <div class="ui <%= get_holdings_color @transactions, @rates %> statistic">
         <div class="value">
-          <i class="tiny dollar sign icon"></i><%=to_precision(total_holdings_in_main_currency(@transactions, @rates), 2) %>
+          <i class="tiny dollar sign icon"></i><%=to_money(total_holdings_in_main_currency(@transactions, @rates), @current_user) %>
         </div>
         <div class="label">
           <%= @current_user.main_currency %> holdings
@@ -37,7 +37,7 @@
     </div>
 
   <!-- Balances -->
-  <h2 class="ui inverted header">Balance history</h2>
+  <h2 class="ui inverted header">Last 30 days</h2>
   <div class="ui p-0 segment mb-1">
     <div id="balance"></div>
     <script defer>
@@ -85,7 +85,7 @@
             },
             title: {
               text: 'Holdings (<%= @current_user.main_currency %>)'
-            },
+            }
           },
           xaxis: {
             type: 'datetime',
@@ -189,7 +189,7 @@
             <i class="large circular <%=@token_names[token] %> icon"></i>
             <div class="content w-auto">
               <div class="ui sub header"><%= token %></div>
-              <p>$<%= to_precision(rate, 2) %></p>
+              <p>$<%= to_money(rate, @current_user) %></p>
             </div>
           </div>
       <%end %>

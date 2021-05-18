@@ -49,7 +49,8 @@ defmodule CoinPortfolio.MixProject do
       {:httpoison, "~> 1.7"},
       {:phx_gen_auth, "~> 0.7", only: [:dev], runtime: false},
       {:quantum, "~> 3.0"},
-      {:poison, "~> 4.0"}
+      {:poison, "~> 4.0"},
+      {:money, "~> 1.4"}
     ]
   end
 
