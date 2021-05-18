@@ -11,8 +11,10 @@ defmodule CoinPortfolioWeb.IndexLive do
   end
 
   def fetch(socket, session) do
-    updated_socket = assign(socket, :current_user, session["current_user"])
-    updated_socket = fetch_transactions_and_rates(updated_socket)
+    updated_socket =
+      socket
+      |> assign(:current_user, session["current_user"])
+      |> fetch_transactions_and_rates()
     current_user = updated_socket.assigns.current_user
     if current_user do
       assign(updated_socket, :transactions, Transactions.find_transactions(current_user.email))
@@ -22,10 +24,14 @@ defmodule CoinPortfolioWeb.IndexLive do
   def fetch_transactions_and_rates(socket) do
     current_user = socket.assigns.current_user
     thirty_days_back = DateTime.to_iso8601(DateTime.add(DateTime.now!("Etc/UTC"), -30 * 24 * 60 * 60, :second))
+    accepted_tokens = Application.get_env(:coin_portfolio, :accepted_tokens)
+    accepted_currencies = Application.get_env(:coin_portfolio, :accepted_currencies)
     if current_user do
       rates = get_rates(Tokens.latest_rates(), current_user.main_currency)
       socket
       |> assign(:rates, rates)
+      |> assign(:accepted_tokens, accepted_tokens)
+      |> assign(:accepted_currencies, accepted_currencies)
       |> assign(:transactions, Transactions.find_transactions(current_user.email))
       |> assign(:token_names, token_symbol_name_map())
       |> assign(:assets, Transactions.holdings_by_token(current_user))

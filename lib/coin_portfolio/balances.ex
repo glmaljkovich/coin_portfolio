@@ -22,7 +22,9 @@ defmodule CoinPortfolio.Balances do
   end
 
   def balances_for_user(user, timestamp) do
-    query = from b in Balance, where: b.user == ^user and b.timestamp >= ^timestamp
+    query = from b in Balance,
+      where: b.user == ^user and b.timestamp >= ^timestamp,
+      order_by: b.timestamp
     Repo.all(query)
   end
 

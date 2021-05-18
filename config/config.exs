@@ -10,6 +10,12 @@ use Mix.Config
 config :coin_portfolio,
   ecto_repos: [CoinPortfolio.Repo]
 
+# Currencies and Tokens
+config :coin_portfolio,
+  accepted_tokens: ["BTC", "ETH", "DOGE", "DAI"],
+  accepted_currencies: ["ARS", "USD"],
+  base_currency: "ARS"
+
 # Configures the endpoint
 config :coin_portfolio, CoinPortfolioWeb.Endpoint,
   url: [host: "localhost"],

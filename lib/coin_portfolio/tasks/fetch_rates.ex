@@ -1,9 +1,13 @@
 defmodule CoinPortfolio.Scheduler.FetchRates do
   alias CoinPortfolio.Tokens
   def run() do
-    IO.puts "Fetchin rates..."
+    IO.puts "Fetching rates..."
     cmc_api_key = System.get_env("CMC_API_KEY")
-    url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC,ETH,DAI,BUSD,DOGE&convert=ARS&CMC_PRO_API_KEY=#{cmc_api_key}"
+    base_currency = Application.get_env(:coin_portfolio, :base_currency)
+    tokens =
+      Application.get_env(:coin_portfolio, :accepted_tokens)
+      |> Enum.join(",")
+    url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=#{tokens}&convert=#{base_currency}&CMC_PRO_API_KEY=#{cmc_api_key}"
     {:ok, %HTTPoison.Response{ body: body }} = HTTPoison.get(url)
     rates = Jason.decode!(body)
     for {token, rate} <- rates["data"] do

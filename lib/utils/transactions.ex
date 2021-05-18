@@ -73,7 +73,7 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
     to_precision(asset.total * rates[asset.token], 2)
   end
 
-  def balance_history_to_chart_data(balance_history) do
+  def balance_history_to_chart_data(balance_history, current_user) do
     balance_history
     |> Enum.map(
       fn balance ->
@@ -84,7 +84,11 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
     |> Poison.encode!()
   end
 
-  def to_money(amount, current_user) do
-    Money.to_string(Money.parse!(amount, String.to_atom(current_user.main_currency)), symbol: false)
+  @spec to_money(
+          binary | number | Decimal.t(),
+          atom | %{:main_currency => binary, optional(any) => any}
+        ) :: binary
+  def to_money(amount, current_user, symbol \\ false) do
+    Money.to_string(Money.parse!(amount, String.to_atom(current_user.main_currency)), symbol: symbol)
   end
 end

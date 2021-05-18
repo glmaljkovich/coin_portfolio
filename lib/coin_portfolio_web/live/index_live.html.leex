@@ -42,13 +42,20 @@
     <div id="balance"></div>
     <script defer>
       setTimeout(() => {
-        var dates = JSON.parse('<%= raw balance_history_to_chart_data(@balance_history) %>')
+        var dates = JSON.parse('<%= raw balance_history_to_chart_data(@balance_history, @current_user) %>')
+        var formatter = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: "<%= @current_user.main_currency %>",
+          currencyDisplay: 'narrowSymbol',
+          minimumFractionDigits: 0
+        });
+
         var options = {
-            series: [{
+          series: [{
             name: 'Balance',
             data: dates
           }],
-            chart: {
+          chart: {
             type: 'area',
             stacked: false,
             height: 350,
@@ -80,7 +87,7 @@
           yaxis: {
             labels: {
               formatter: function (val) {
-                return val.toFixed(0);
+                return formatter.format(val);
               },
             },
             title: {
@@ -97,7 +104,7 @@
             shared: false,
             y: {
               formatter: function (val) {
-                return "<%= @current_user.main_currency %> " + val.toFixed(0)
+                return "<%= @current_user.main_currency %> " + formatter.format(val)
               }
             }
           }
@@ -145,11 +152,12 @@
                 <label>Currency</label>
                 <div class="ui compact selection dropdown button">
                   <%= text_input :transaction, :main_currency, type: "hidden" %>
-                  <div class="default text">ARS</div>
+                  <div class="default text"><%= Enum.at(@accepted_currencies, 0) %></div>
                   <i class="dropdown icon"></i>
                   <div class="menu">
-                    <div class="item">ARS</div>
-                    <div class="item">USD</div>
+                    <%=for currency <- @accepted_currencies do %>
+                      <div class="item"><%= currency %></div>
+                    <%end %>
                   </div>
                 </div>
               </div>
@@ -164,13 +172,12 @@
               <label>Cryptocurrency</label>
               <div class="ui compact selection dropdown button">
                 <%= text_input :transaction, :token, type: "hidden" %>
-                <div class="default text">BTC</div>
+                <div class="default text"><%= Enum.at(@accepted_tokens, 0) %></div>
                 <i class="dropdown icon"></i>
                 <div class="menu">
-                  <div class="item">BTC</div>
-                  <div class="item">ETH</div>
-                  <div class="item">DAI</div>
-                  <div class="item">DOGE</div>
+                  <%=for token <- @accepted_tokens do %>
+                    <div class="item"><%= token %></div>
+                  <%end %>
                 </div>
               </div>
             </div>
@@ -189,7 +196,7 @@
             <i class="large circular <%=@token_names[token] %> icon"></i>
             <div class="content w-auto">
               <div class="ui sub header"><%= token %></div>
-              <p>$<%= to_money(rate, @current_user) %></p>
+              <p><%= to_money(rate, @current_user, true) %> <%= @current_user.main_currency%></p>
             </div>
           </div>
       <%end %>
@@ -236,7 +243,7 @@
                   </h5>
                 <%end %>
               </div>
-              <div class="item"><%= to_precision(transaction.currency_amount, 2) %> <%= String.upcase(transaction.main_currency) %></div>
+              <div class="item"><%= to_money(transaction.currency_amount, @current_user, true) %> <%= String.upcase(transaction.main_currency) %></div>
             </div>
           </td>
           <td>
@@ -271,7 +278,7 @@
             <span class="capitalize"><%=@token_names[String.upcase(asset.token)] %><span>
           </td>
           <td>
-            $<%= to_precision(@rates[String.upcase(asset.token)], 2) %> <%= String.upcase(@current_user.main_currency) %>
+            $<%= to_money(@rates[String.upcase(asset.token)], @current_user) %> <%= String.upcase(@current_user.main_currency) %>
           </td>
           <td>
             <div class="ui list">
@@ -280,7 +287,7 @@
                   <%= to_precision(asset.total, 8) %> <%= String.upcase(asset.token) %>
                 </h5>
               </div>
-              <div class="item">$<%= token_to_main_currency(asset, @rates) %> <%= String.upcase(@current_user.main_currency) %></div>
+              <div class="item"><%= to_money(token_to_main_currency(asset, @rates), @current_user, true) %> <%= String.upcase(@current_user.main_currency) %></div>
             </div>
           </td>
         </tr>
