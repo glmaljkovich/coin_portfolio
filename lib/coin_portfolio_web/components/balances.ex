@@ -7,7 +7,7 @@ defmodule BalancesComponent do
     ~L"""
     <div class="ui p-0 segment mb-1">
       <div id="balance"></div>
-      <script>
+      <script id="balancescript">
       function initChart() {
         var dates = JSON.parse('<%= raw balance_history_to_chart_data(@balance_history) %>')
         var formatter = new Intl.NumberFormat('en-US', {
@@ -79,13 +79,9 @@ defmodule BalancesComponent do
         var chart = new ApexCharts(document.querySelector("#balance"), options);
         chart.render();
       }
-      initChart();
-      $('body').on('DOMSubtreeModified', '#balance', () => {
+      $('body').on('DOMSubtreeModified', '#balancescript', () => {
         initChart();
       });
-      setTimeout(() => {
-        initChart();
-      }, 500);
       </script>
     </div>
     """
