@@ -12,7 +12,7 @@ database_url =
     """
 
 config :coin_portfolio, CoinPortfolio.Repo,
-  # ssl: true,
+  ssl: true,
   url: database_url,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
@@ -29,6 +29,9 @@ config :coin_portfolio, CoinPortfolioWeb.Endpoint,
     transport_options: [socket_opts: [:inet6]]
   ],
   secret_key_base: secret_key_base
+
+config :coin_portfolio,
+    cmc_api_key: System.get_env("CMC_API_KEY")
 
 # ## Using releases (Elixir v1.9+)
 #

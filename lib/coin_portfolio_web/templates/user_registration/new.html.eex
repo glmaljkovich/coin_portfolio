@@ -37,10 +37,6 @@
       <%= select f, :main_currency, ["ARS", "USD", "EUR"] %>
     </div>
     <div class="field">
-      <label>CoinMarketCap API Key</label>
-      <%= text_input f, :cmc_api_key, required: true, placeholder: "c8eb6917-bd5b-4c83-8520-a0b3208a7bc7" %>
-    </div>
-    <div class="field">
       <div class="ui checkbox">
         <input type="checkbox" tabindex="0" class="hidden">
         <label>I agree to the Terms and Conditions</label>

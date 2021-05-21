@@ -10,7 +10,7 @@ defmodule BalancesComponent do
       <script>
 
       setTimeout(() => {
-          var dates = JSON.parse('<%= raw balance_history_to_chart_data(@balance_history, @current_user) %>')
+          var dates = JSON.parse('<%= raw balance_history_to_chart_data(@balance_history) %>')
           var formatter = new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: "<%= @current_user.main_currency %>",

@@ -74,3 +74,6 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :coin_portfolio,
+    cmc_api_key: System.get_env("CMC_API_KEY")

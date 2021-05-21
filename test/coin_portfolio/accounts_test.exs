@@ -6,9 +6,9 @@ defmodule CoinPortfolio.AccountsTest do
   describe "users" do
     alias CoinPortfolio.Accounts.User
 
-    @valid_attrs %{cmc_api_key: "some cmc_api_key", email: "some email", first_name: "some first_name", last_name: "some last_name", main_currency: "some main_currency", password: "some password"}
-    @update_attrs %{cmc_api_key: "some updated cmc_api_key", email: "some updated email", first_name: "some updated first_name", last_name: "some updated last_name", main_currency: "some updated main_currency", password: "some updated password"}
-    @invalid_attrs %{cmc_api_key: nil, email: nil, first_name: nil, last_name: nil, main_currency: nil, password: nil}
+    @valid_attrs %{email: "some email", first_name: "some first_name", last_name: "some last_name", main_currency: "some main_currency", password: "some password"}
+    @update_attrs %{email: "some updated email", first_name: "some updated first_name", last_name: "some updated last_name", main_currency: "some updated main_currency", password: "some updated password"}
+    @invalid_attrs %{email: nil, first_name: nil, last_name: nil, main_currency: nil, password: nil}
 
     def user_fixture(attrs \\ %{}) do
       {:ok, user} =

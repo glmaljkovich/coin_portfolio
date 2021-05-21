@@ -10,7 +10,6 @@ defmodule CoinPortfolio.Accounts.User do
     field :hashed_password, :string
     field :confirmed_at, :naive_datetime
     field :main_currency, :string
-    field :cmc_api_key, :string
 
     timestamps()
   end
@@ -34,7 +33,7 @@ defmodule CoinPortfolio.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password, :name,  :main_currency, :cmc_api_key])
+    |> cast(attrs, [:email, :password, :name,  :main_currency])
     |> validate_email()
     |> validate_password(opts)
   end
