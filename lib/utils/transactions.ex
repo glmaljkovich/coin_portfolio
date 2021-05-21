@@ -61,7 +61,11 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
     holdings = total_holdings_in_main_currency(transactions, rates)
     spent = total_main_currency_spent(transactions)
     change = holdings - spent
-    to_precision(change / spent * 100, 1)
+    if spent > 0 do
+      to_precision(change / spent * 100, 1)
+    else
+      0
+    end
   end
 
   def pretty_transaction_date(date) do

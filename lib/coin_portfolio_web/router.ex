@@ -22,7 +22,7 @@ defmodule CoinPortfolioWeb.Router do
     pipe_through :browser
 
     # get "/", PageController, :index
-    live "/", IndexLive, :index
+    live "/", IndexLive, :indexo
   end
 
   # Other scopes may use custom stacks.

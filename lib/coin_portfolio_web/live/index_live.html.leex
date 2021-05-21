@@ -4,7 +4,7 @@
   <div class="ui center aligned circular segment">
     <div class="ui small statistic">
       <div class="value">
-        <%=if String.starts_with?(holdings_percentage(@transactions, @rates), "-") do %>
+        <%=if holdings_percentage(@transactions, @rates) < 0 do %>
           <i class="small red caret down icon"></i>
         <%else %>
           <i class="small green caret up icon"></i>
@@ -38,227 +38,19 @@
 
   <!-- Balances -->
   <h2 class="ui inverted header">Last 30 days</h2>
-  <div class="ui p-0 segment mb-1">
-    <div id="balance"></div>
-    <script defer>
-      setTimeout(() => {
-        var dates = JSON.parse('<%= raw balance_history_to_chart_data(@balance_history, @current_user) %>')
-        var formatter = new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: "<%= @current_user.main_currency %>",
-          currencyDisplay: 'narrowSymbol',
-          minimumFractionDigits: 0
-        });
+  <%= live_component @socket, BalancesComponent, id: "balances", balance_history: @balance_history, current_user: @current_user %>
 
-        var options = {
-          series: [{
-            name: 'Balance',
-            data: dates
-          }],
-          chart: {
-            type: 'area',
-            stacked: false,
-            height: 350,
-            zoom: {
-              type: 'x',
-              enabled: true,
-              autoScaleYaxis: true
-            },
-            toolbar: {
-              autoSelected: 'zoom'
-            }
-          },
-          dataLabels: {
-            enabled: false
-          },
-          markers: {
-            size: 0,
-          },
-          fill: {
-            type: 'gradient',
-            gradient: {
-              shadeIntensity: 1,
-              inverseColors: false,
-              opacityFrom: 0.5,
-              opacityTo: 0,
-              stops: [0, 90, 100]
-            },
-          },
-          yaxis: {
-            labels: {
-              formatter: function (val) {
-                return formatter.format(val);
-              },
-            },
-            title: {
-              text: 'Holdings (<%= @current_user.main_currency %>)'
-            }
-          },
-          xaxis: {
-            type: 'datetime',
-            title: {
-              text: 'Time'
-            },
-          },
-          tooltip: {
-            shared: false,
-            y: {
-              formatter: function (val) {
-                return "<%= @current_user.main_currency %> " + formatter.format(val)
-              }
-            }
-          }
-        };
-        var chart = new ApexCharts(document.querySelector("#balance"), options);
-        chart.render();
-      }, 500);
-    </script>
-  </div>
+  <!-- Add Transaction-->
+  <h2 class="ui inverted header">Add Transaction</h2>
+  <%= live_component @socket, AddTransaction, id: @current_user.email, accepted_currencies: @accepted_currencies, accepted_tokens: @accepted_tokens %>
 
-    <!-- Add Transaction-->
-    <h2 class="ui inverted header">Add Transaction</h2>
-    <div class="ui blue segment">
-      <form action="#" phx-submit="add">
-        <div class="ui equal width form">
-          <div class="fields">
-            <div class="field">
-              <label>Type</label>
-              <div class="ui compact selection dropdown button">
-                <%= text_input :transaction, :type, type: "hidden" %>
-                <div class="default text">buy</div>
-                <i class="dropdown icon"></i>
-                <div class="menu">
-                  <div class="item">buy</div>
-                  <div class="item">sell</div>
-                </div>
-              </div>
-            </div>
-            <div class="field">
-              <label>Date</label>
-              <div class="ui input">
-                <%=date_input :transaction, :date %>
-              </div>
-            </div>
-          </div>
-          <div class="fields">
-            <div class="field">
-              <label>Amount</label>
-              <div class="ui left icon input">
-                <i class="dollar sign icon"></i>
-                <%= text_input :transaction, :currency_amount, placeholder: "0.00" %>
-              </div>
-            </div>
-              <div class="field">
-                <label>Currency</label>
-                <div class="ui compact selection dropdown button">
-                  <%= text_input :transaction, :main_currency, type: "hidden" %>
-                  <div class="default text"><%= Enum.at(@accepted_currencies, 0) %></div>
-                  <i class="dropdown icon"></i>
-                  <div class="menu">
-                    <%=for currency <- @accepted_currencies do %>
-                      <div class="item"><%= currency %></div>
-                    <%end %>
-                  </div>
-                </div>
-              </div>
-            <div class="field">
-              <label>Tokens</label>
-              <div class="ui left icon input">
-                <i class="dollar sign icon"></i>
-                <%= text_input :transaction, :token_amount, placeholder: "0.00" %>
-              </div>
-            </div>
-            <div class="field">
-              <label>Cryptocurrency</label>
-              <div class="ui compact selection dropdown button">
-                <%= text_input :transaction, :token, type: "hidden" %>
-                <div class="default text"><%= Enum.at(@accepted_tokens, 0) %></div>
-                <i class="dropdown icon"></i>
-                <div class="menu">
-                  <%=for token <- @accepted_tokens do %>
-                    <div class="item"><%= token %></div>
-                  <%end %>
-                </div>
-              </div>
-            </div>
-        </div>
-        <%= submit "Add", phx_disable_with: "Adding...", class: "ui green button" %>
-      </form>
-    </div>
-  </div>
   <!-- Rates -->
   <h2 class="ui inverted header">Rates</h2>
-  <div class="ui segment">
-    <div class="flex">
-      <div class="ui large horizontal scrollable list">
-      <%=for {token, rate} <- @rates do%>
-          <div class="item">
-            <i class="large circular <%=@token_names[token] %> icon"></i>
-            <div class="content w-auto">
-              <div class="ui sub header"><%= token %></div>
-              <p><%= to_money(rate, @current_user, true) %> <%= @current_user.main_currency%></p>
-            </div>
-          </div>
-      <%end %>
-      </div>
-    </div>
-  </div>
+  <%= live_component @socket, Rates, id: "rates", rates: @rates, current_user: @current_user, token_names: @token_names %>
+
   <!-- Transactions -->
   <h2 class="ui inverted header">Transactions</h2>
-  <div class="ui horizontal scrollable p-0 segment">
-    <table class="ui selectable unstackable table">
-      <thead>
-        <tr>
-          <th>Token</th>
-          <th>Type</th>
-          <th>Amount</th>
-          <th>Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%=for transaction <- @transactions do %>
-        <tr>
-          <td>
-            <i class="large circular <%=@token_names[String.upcase(transaction.token)] %> icon"></i>
-            <span class="capitalize"><%=@token_names[String.upcase(transaction.token)] %></span>
-          </td>
-          <td>
-            <%=if transaction.type == "buy" do %>
-              <div class="ui green label">buy</div>
-            <%else %>
-              <div class="ui red label">sell</div>
-            <%end %>
-          </td>
-          <td class="">
-            <div class="ui list">
-              <div class="item">
-                <%=if transaction.type == "buy" do %>
-                  <h5 class="ui green header">
-                    +<%= transaction.token_amount %> <%= String.upcase(transaction.token) %>
-                  </h5>
-                <%else %>
-                  <h5 class="ui red header">
-                    -<%= transaction.token_amount %> <%= String.upcase(transaction.token) %>
-                  </h5>
-                <%end %>
-              </div>
-              <div class="item"><%= to_money(transaction.currency_amount, @current_user, true) %> <%= String.upcase(transaction.main_currency) %></div>
-            </div>
-          </td>
-          <td>
-            <div class=""><%= pretty_transaction_date(transaction.date) %></div>
-          </td>
-          <td>
-            <button class="ui basic icon button" phx-click="delete" phx-value-transactionId="<%=transaction.id %>">
-              <i class="trash icon"></i>
-            </button>
-          </td>
-        </tr>
-        <%end %>
-      </tbody>
-    </table>
-  </div>
+  <%= live_component @socket, TransactionsComponent, id: "transactions", transactions: @transactions, token_names: @token_names, current_user: @current_user %>
   <!-- Assets -->
   <h2 class="ui inverted header">Assets</h2>
   <div class="ui p-0 segment mb-1">

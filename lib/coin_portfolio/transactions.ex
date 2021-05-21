@@ -89,7 +89,7 @@ defmodule CoinPortfolio.Transactions do
     transaction
     |> Map.merge(%{:user => current_user.email})
     |> Map.put(:token, String.upcase(transaction.token))
-    |> Map.put(:currency, String.upcase(transaction.currency))
+    |> Map.put(:main_currency, String.upcase(transaction.main_currency))
     |> Map.put(:date, "#{transaction.date}T00:00:00Z")
   end
 

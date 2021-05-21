@@ -7,6 +7,7 @@ defmodule CoinPortfolio.Balances do
   alias CoinPortfolio.Repo
 
   alias CoinPortfolio.Balances.Balance
+  alias CoinPortfolio.Utils.TransactionUtils
 
   @doc """
   Returns the list of balances.
@@ -21,11 +22,18 @@ defmodule CoinPortfolio.Balances do
     Repo.all(Balance)
   end
 
-  def balances_for_user(user, timestamp) do
+  def balances_for_user(user, timestamp, transactions, rates) do
     query = from b in Balance,
       where: b.user == ^user and b.timestamp >= ^timestamp,
       order_by: b.timestamp
-    Repo.all(query)
+    latest_balance = %Balance{
+      :holdings => TransactionUtils.total_holdings_in_main_currency(transactions, rates),
+      :spent => 0,
+      :change_percentage => 0,
+      :timestamp => DateTime.to_iso8601(DateTime.now!("Etc/UTC")),
+      :user => user
+    }
+    Repo.all(query) ++ [latest_balance]
   end
 
   @doc """
