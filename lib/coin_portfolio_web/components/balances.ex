@@ -79,10 +79,13 @@ defmodule BalancesComponent do
         var chart = new ApexCharts(document.querySelector("#balance"), options);
         chart.render();
       }
-      initChart()
+      initChart();
+      $('body').on('DOMSubtreeModified', '#balance', () => {
+        initChart();
+      });
       setTimeout(() => {
-        initChart()
-        }, 500);
+        initChart();
+      }, 500);
       </script>
     </div>
     """

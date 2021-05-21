@@ -37,4 +37,9 @@ npm-debug.log
 /priv/static/
 /assets/static/semantic/src/
 /assets/static/semantic/tasks/
+/assets/static/semantic/dist/themes/basic/
+/assets/static/semantic/dist/themes/github/
+/assets/static/semantic/dist/themes/basic/
+/assets/static/semantic/dist/themes/material/
+/assets/static/semantic/dist/components/
 /assets/static/semantic/gulpfile.js
