@@ -36,7 +36,7 @@ config :phoenix, :json_library, Jason
 config :coin_portfolio, CoinPortfolio.Scheduler,
   jobs: [
     # Every 30 minutes
-    {"*/1 * * * *",   fn -> CoinPortfolio.Scheduler.FetchRates.run() end},
+    {"*/30 * * * *",   fn -> CoinPortfolio.Scheduler.FetchRates.run() end},
     # Every 6 hours
     {"0 */6 * * *",   fn -> CoinPortfolio.Scheduler.BalanceSnapshot.run() end},
   ]
