@@ -29,8 +29,6 @@
     "node-sass": "^4.13.1",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "sass-loader": "^8.0.2",
-    "semantic-ui": "^2.4.2",
-    "semantic-ui-less": "^2.4.1",
     "terser-webpack-plugin": "^2.3.2",
     "webpack": "4.41.5",
     "webpack-cli": "^3.3.2"
