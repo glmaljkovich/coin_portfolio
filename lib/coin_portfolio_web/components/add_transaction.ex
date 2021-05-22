@@ -6,7 +6,7 @@ defmodule AddTransaction do
 
   def render(assigns) do
     ~L"""
-    <div class="ui blue segment">
+    <div id="addTransaction" class="ui blue segment">
       <form action="#" phx-submit="add">
         <div class="ui equal width form">
           <div class="fields">
@@ -72,11 +72,11 @@ defmodule AddTransaction do
             </div>
         </div>
         <%= Form.submit "Add", phx_disable_with: "Adding...", class: "ui green button" %>
-        <script defer>
-        setTimeout(() => {
+        <script>
+        $('#addTransaction').ready(() => {
           $('.ui.dropdown').dropdown();
           $('.ui.checkbox').checkbox();
-        }, 500)
+        });
         </script>
       </form>
     </div>
