@@ -1,7 +1,7 @@
 defmodule CoinPortfolio.Scheduler.FetchRates do
   alias CoinPortfolio.Tokens
   def run() do
-    IO.puts "Fetching rates..."
+    IO.puts "Fetching token rates..."
     cmc_api_key = Application.get_env(:coin_portfolio, :cmc_api_key)
     accepted_currencies = Application.get_env(:coin_portfolio, :accepted_currencies)
     tokens =

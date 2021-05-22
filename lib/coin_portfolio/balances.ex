@@ -22,12 +22,12 @@ defmodule CoinPortfolio.Balances do
     Repo.all(Balance)
   end
 
-  def balances_for_user(user, timestamp, transactions, rates) do
+  def balances_for_user(user, timestamp, holdings) do
     query = from b in Balance,
       where: b.user == ^user and b.timestamp >= ^timestamp,
       order_by: b.timestamp
     latest_balance = %Balance{
-      :holdings => TransactionUtils.total_holdings_in_main_currency(transactions, rates),
+      :holdings => holdings,
       :spent => 0,
       :change_percentage => 0,
       :timestamp => DateTime.to_iso8601(DateTime.now!("Etc/UTC")),

@@ -3,6 +3,7 @@ defmodule CoinPortfolio.Scheduler.BalanceSnapshot do
   alias CoinPortfolio.Balances
   alias CoinPortfolio.Transactions
   alias CoinPortfolio.Tokens
+  alias CoinPortfolio.Currencies
 
   import CoinPortfolio.Utils.TransactionUtils
 
@@ -11,10 +12,11 @@ defmodule CoinPortfolio.Scheduler.BalanceSnapshot do
     users = Accounts.list_users()
     rates_list = Tokens.latest_rates()
     for user <- users do
-      rates = get_rates(rates_list, user.main_currency)
+      rates = get_rates_for_currency(rates_list, user.main_currency)
       transactions = Transactions.find_transactions(user.email)
-      holdings = total_holdings_in_main_currency(transactions, rates)
-      spent = total_main_currency_spent(transactions)
+      currency_rates = Currencies.latest_currency_rates()
+      holdings = total_holdings_in_main_currency(transactions, rates, currency_rates, user)
+      spent = total_main_currency_spent(transactions, currency_rates, user)
       change = holdings - spent
       change_percentage = to_precision(change / spent * 100, 1)
       record = %{

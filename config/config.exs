@@ -36,9 +36,11 @@ config :phoenix, :json_library, Jason
 config :coin_portfolio, CoinPortfolio.Scheduler,
   jobs: [
     # Every 30 minutes
-    {"*/30 * * * *",   fn -> CoinPortfolio.Scheduler.FetchRates.run() end},
+    {"*/30 * * * *", fn -> CoinPortfolio.Scheduler.FetchRates.run() end},
+    # Every 30 minutes
+    {"*/30 * * * *", fn -> CoinPortfolio.Scheduler.FetchCurrencyRates.run() end},
     # Every 6 hours
-    {"0 */6 * * *",   fn -> CoinPortfolio.Scheduler.BalanceSnapshot.run() end},
+    {"0 */6 * * *", fn -> CoinPortfolio.Scheduler.BalanceSnapshot.run() end},
   ]
 
 # Import environment specific config. This must remain at the bottom

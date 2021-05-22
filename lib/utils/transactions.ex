@@ -2,7 +2,7 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
   @ars_taxes_factor 1.7498
   @ars "ARS"
 
-  def get_rates(rates, main_currency) do
+  def get_rates_for_currency(rates, main_currency) do
     extracted_rates = for rate <- rates, into: %{}, do: {"#{rate.token}/#{rate.currency}", rate.rate}
     for {token, rate} <- extracted_rates,
       into: %{},
@@ -16,34 +16,42 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
     Float.to_string(val, decimals: decimals)
   end
 
-  def total_main_currency_spent(transactions) do
+  def total_main_currency_spent(transactions, currency_rates, current_user) do
     Enum.reduce(transactions, 0,
       fn transaction, total ->
+        exchange_rate = get_exchange_rate(currency_rates, current_user, transaction)
         if transaction.type == "buy" do
-          transaction.currency_amount + total
+          (transaction.currency_amount * exchange_rate.rate) + total
         else
-          total - transaction.currency_amount
+          total - (transaction.currency_amount * exchange_rate.rate)
         end
       end
     )
   end
 
-  def total_holdings_in_main_currency(transactions, rates) do
+  def get_exchange_rate(currency_rates, current_user, transaction) do
+    Enum.find(currency_rates,
+      fn rate ->
+        rate.base_currency == transaction.main_currency and rate.target_currency == current_user.main_currency
+      end
+    )
+  end
+
+  def total_holdings_in_main_currency(transactions, rates, currency_rates, current_user) do
     Enum.reduce(transactions, 0.00,
       fn transaction, total ->
+        exchange_rate = get_exchange_rate(currency_rates, current_user, transaction)
         rate = rates["#{String.upcase(transaction.token)}/#{transaction.main_currency}"]
         if transaction.type == "buy" do
-          (transaction.token_amount * rate) + total
+          (transaction.token_amount * rate * exchange_rate.rate) + total
         else
-          total - (transaction.token_amount * rate)
+          total - (transaction.token_amount * rate * exchange_rate.rate)
         end
       end
     )
   end
 
-  def get_holdings_color(transactions, rate) do
-    holdings = total_holdings_in_main_currency(transactions, rate)
-    spent = total_main_currency_spent(transactions)
+  def get_holdings_color(holdings, spent) do
     if holdings > spent, do: "green", else: "red"
   end
 
@@ -57,9 +65,7 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
     }
   end
 
-  def holdings_percentage(transactions, rates) do
-    holdings = total_holdings_in_main_currency(transactions, rates)
-    spent = total_main_currency_spent(transactions)
+  def holdings_percentage(holdings, spent) do
     change = holdings - spent
     if spent > 0 do
       to_precision(change / spent * 100, 1)
@@ -88,10 +94,6 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
     |> Poison.encode!()
   end
 
-  @spec to_money(
-          binary | number | Decimal.t(),
-          atom | %{:main_currency => binary, optional(any) => any}
-        ) :: binary
   def to_money(amount, current_user, symbol \\ false) do
     Money.to_string(Money.parse!(amount, String.to_atom(current_user.main_currency)), symbol: symbol)
   end

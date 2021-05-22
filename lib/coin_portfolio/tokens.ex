@@ -27,15 +27,6 @@ defmodule CoinPortfolio.Tokens do
       group_by: [r1.token, r1.currency]
     query = from(r2 in Rates, inner_join: r1 in subquery(latest_rates_query), on: r1.token == r2.token and r1.currency == r2.currency and r1.max_timestamp == r2.timestamp )
     Repo.all(query)
-    # Repo.query("""
-    # select *
-    # from rates r
-    # inner join (
-    #     select token, currency, max(timestamp) as latest
-    #     from rates
-    #     group by token, currency
-    # ) latest_rates on r.token = latest_rates.token and r.currency = latest_rates.currency and r.timestamp = latest_rates.latest
-    # """)
   end
 
   @doc """

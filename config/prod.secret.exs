@@ -31,7 +31,8 @@ config :coin_portfolio, CoinPortfolioWeb.Endpoint,
   secret_key_base: secret_key_base
 
 config :coin_portfolio,
-    cmc_api_key: System.get_env("CMC_API_KEY")
+    cmc_api_key: System.get_env("CMC_API_KEY"),
+    exchange_rate_api_key: System.get_env("EXCHANGE_RATE_API_KEY")
 
 # ## Using releases (Elixir v1.9+)
 #

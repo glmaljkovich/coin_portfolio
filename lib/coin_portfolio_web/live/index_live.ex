@@ -3,6 +3,7 @@ defmodule CoinPortfolioWeb.IndexLive do
   alias CoinPortfolio.Transactions
   alias CoinPortfolio.Tokens
   alias CoinPortfolio.Balances
+  alias CoinPortfolio.Currencies
   import CoinPortfolio.Utils.TransactionUtils
 
   @impl true
@@ -30,15 +31,21 @@ defmodule CoinPortfolioWeb.IndexLive do
     accepted_currencies = Application.get_env(:coin_portfolio, :accepted_currencies)
     if current_user do
       transactions = Transactions.find_transactions(current_user.email)
-      rates = get_rates(Tokens.latest_rates(), current_user.main_currency)
+      rates = get_rates_for_currency(Tokens.latest_rates(), current_user.main_currency)
+      currency_rates = Currencies.latest_currency_rates()
+      holdings = total_holdings_in_main_currency(transactions, rates, currency_rates, current_user)
+      spent = total_main_currency_spent(transactions, currency_rates, current_user)
       socket
       |> assign(:rates, rates)
+      |> assign(:currency_rates, currency_rates)
       |> assign(:accepted_tokens, accepted_tokens)
       |> assign(:accepted_currencies, accepted_currencies)
       |> assign(:transactions, Transactions.find_transactions(current_user.email))
       |> assign(:token_names, token_symbol_name_map())
       |> assign(:assets, Transactions.holdings_by_token(current_user))
-      |> assign(:balance_history, Balances.balances_for_user(current_user.email, thirty_days_back, transactions, rates))
+      |> assign(:holdings, holdings)
+      |> assign(:spent, spent)
+      |> assign(:balance_history, Balances.balances_for_user(current_user.email, thirty_days_back, holdings))
     else
       socket
     end

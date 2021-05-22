@@ -76,4 +76,5 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :coin_portfolio,
-    cmc_api_key: System.get_env("CMC_API_KEY")
+    cmc_api_key: System.get_env("CMC_API_KEY"),
+    exchange_rate_api_key: System.get_env("EXCHANGE_RATE_API_KEY")
