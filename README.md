@@ -2,14 +2,14 @@
 An excuse to learn Phoenix Framework and also a web app to keep track of your
 cryptocurrency spend and earnings
 
-![Screen capture of the app](assets/static/images/screen1.png)
-![Another screen capture of the app](assets/static/images/screen2.png)
+![Screen capture of the app](assets/static/images/coin_portfolio.gif)
 
 ## Requirements 
 
 - gulp
 - semantic-ui installed on static/semantic/
-- A CoinMarketCap API key set as an env variable `CMC_API_KEY=your-api-key`
+- A [CoinMarketCap](https://pro.coinmarketcap.com/) API key set as an env variable `CMC_API_KEY=your-api-key`
+- An [Exchange Rates](https://exchangerate-api.com) API key set as an env variable `EXCHANGE_RATE_API_KEY=another-api-key`
 
 To start your Phoenix server:
 
