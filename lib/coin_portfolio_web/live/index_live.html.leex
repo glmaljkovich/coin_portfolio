@@ -4,7 +4,7 @@
   <div class="ui center aligned circular segment">
     <div class="ui small statistic">
       <div class="value">
-        <%=if holdings_percentage(@transactions, @rates) < 0 do %>
+        <%=if String.starts_with?(holdings_percentage(@transactions, @rates), '-') do %>
           <i class="small red caret down icon"></i>
         <%else %>
           <i class="small green caret up icon"></i>

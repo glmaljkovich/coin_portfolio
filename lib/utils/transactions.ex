@@ -64,7 +64,7 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
     if spent > 0 do
       to_precision(change / spent * 100, 1)
     else
-      0
+      "0"
     end
   end
 
