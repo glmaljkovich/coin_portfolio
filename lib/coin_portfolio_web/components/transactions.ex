@@ -7,7 +7,7 @@ defmodule TransactionsComponent do
   @impl
   def render(assigns) do
     ~L"""
-    <div class="ui horizontal scrollable p-0 segment">
+    <div class="ui horizontal scrollable p-0 mb-1 segment">
       <table class="ui selectable unstackable table">
         <thead>
           <tr>

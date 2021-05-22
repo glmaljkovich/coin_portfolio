@@ -37,8 +37,8 @@ config :coin_portfolio, CoinPortfolio.Scheduler,
   jobs: [
     # Every 30 minutes
     {"*/30 * * * *", fn -> CoinPortfolio.Scheduler.FetchRates.run() end},
-    # Every 30 minutes
-    {"*/5 * * * *", fn -> CoinPortfolio.Scheduler.FetchCurrencyRates.run() end},
+    # Every 6 hours
+    {"0 */6 * * *", fn -> CoinPortfolio.Scheduler.FetchCurrencyRates.run() end},
     # Every 6 hours
     {"0 */6 * * *", fn -> CoinPortfolio.Scheduler.BalanceSnapshot.run() end},
   ]
