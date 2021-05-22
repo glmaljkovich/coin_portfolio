@@ -13,7 +13,7 @@ config :coin_portfolio,
 # Currencies and Tokens
 config :coin_portfolio,
   accepted_tokens: ["BTC", "ETH", "DOGE", "DAI"],
-  accepted_currencies: ["ARS", "USD"],
+  accepted_currencies: ["ARS", "USD", "EUR"],
   base_currency: "ARS"
 
 # Configures the endpoint

@@ -70,7 +70,7 @@
             <span class="capitalize"><%=@token_names[String.upcase(asset.token)] %><span>
           </td>
           <td>
-            $<%= to_money(@rates[String.upcase(asset.token)], @current_user) %> <%= String.upcase(@current_user.main_currency) %>
+            $<%= to_money(@rates["#{String.upcase(asset.token)}/#{@current_user.main_currency}"], @current_user) %> <%= String.upcase(@current_user.main_currency) %>
           </td>
           <td>
             <div class="ui list">
@@ -79,7 +79,7 @@
                   <%= to_precision(asset.total, 8) %> <%= String.upcase(asset.token) %>
                 </h5>
               </div>
-              <div class="item"><%= to_money(token_to_main_currency(asset, @rates), @current_user, true) %> <%= String.upcase(@current_user.main_currency) %></div>
+              <div class="item"><%= to_money(token_to_main_currency(asset, @rates, @current_user), @current_user, true) %> <%= String.upcase(@current_user.main_currency) %></div>
             </div>
           </td>
         </tr>

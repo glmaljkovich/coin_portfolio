@@ -3,7 +3,7 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
   @ars "ARS"
 
   def get_rates(rates, main_currency) do
-    extracted_rates = for rate <- rates, into: %{}, do: {rate.token, rate.rate}
+    extracted_rates = for rate <- rates, into: %{}, do: {"#{rate.token}/#{rate.currency}", rate.rate}
     for {token, rate} <- extracted_rates,
       into: %{},
       do: {
@@ -32,7 +32,7 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
     Enum.reduce(transactions, 0.00,
       fn transaction, total ->
         if transaction.type == "buy" do
-          rate = rates[String.upcase(transaction.token)]
+          rate = rates["#{String.upcase(transaction.token)}/#{transaction.main_currency}"]
           (transaction.token_amount * rate) + total
         else
           total
@@ -73,8 +73,8 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
     Calendar.strftime(datetime, "%a, %B %d %Y")
   end
 
-  def token_to_main_currency(asset, rates) do
-    to_precision(asset.total * rates[asset.token], 2)
+  def token_to_main_currency(asset, rates, current_user) do
+    to_precision(asset.total * rates["#{asset.token}/#{current_user.main_currency}"], 2)
   end
 
   def balance_history_to_chart_data(balance_history) do
@@ -94,5 +94,9 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
         ) :: binary
   def to_money(amount, current_user, symbol \\ false) do
     Money.to_string(Money.parse!(amount, String.to_atom(current_user.main_currency)), symbol: symbol)
+  end
+
+  def currency_from_rate(token) do
+    Enum.at(String.split(token, "/"), 1)
   end
 end
