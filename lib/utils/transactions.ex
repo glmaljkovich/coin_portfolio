@@ -31,11 +31,11 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
   def total_holdings_in_main_currency(transactions, rates) do
     Enum.reduce(transactions, 0.00,
       fn transaction, total ->
+        rate = rates["#{String.upcase(transaction.token)}/#{transaction.main_currency}"]
         if transaction.type == "buy" do
-          rate = rates["#{String.upcase(transaction.token)}/#{transaction.main_currency}"]
           (transaction.token_amount * rate) + total
         else
-          total
+          total - (transaction.token_amount * rate)
         end
       end
     )

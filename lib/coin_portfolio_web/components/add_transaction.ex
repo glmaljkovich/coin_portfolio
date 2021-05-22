@@ -13,7 +13,7 @@ defmodule AddTransaction do
             <div class="field">
               <label>Type</label>
               <div class="ui compact selection dropdown button">
-                <%= Form.text_input :transaction, :type, type: "hidden" %>
+                <%= Form.text_input :transaction, :type, type: "hidden", value: "buy" %>
                 <div class="default text">buy</div>
                 <i class="dropdown icon"></i>
                 <div class="menu">
@@ -40,7 +40,7 @@ defmodule AddTransaction do
               <div class="field">
                 <label>Currency</label>
                 <div class="ui compact selection dropdown button">
-                  <%= Form.text_input :transaction, :main_currency, type: "hidden" %>
+                  <%= Form.text_input :transaction, :main_currency, type: "hidden", value: Enum.at(@accepted_currencies, 0) %>
                   <div class="default text"><%= Enum.at(@accepted_currencies, 0) %></div>
                   <i class="dropdown icon"></i>
                   <div class="menu">
@@ -60,7 +60,7 @@ defmodule AddTransaction do
             <div class="field">
               <label>Cryptocurrency</label>
               <div class="ui compact selection dropdown button">
-                <%= Form.text_input :transaction, :token, type: "hidden" %>
+                <%= Form.text_input :transaction, :token, type: "hidden", value: Enum.at(@accepted_tokens, 0) %>
                 <div class="default text"><%= Enum.at(@accepted_tokens, 0) %></div>
                 <i class="dropdown icon"></i>
                 <div class="menu">
@@ -73,10 +73,10 @@ defmodule AddTransaction do
         </div>
         <%= Form.submit "Add", phx_disable_with: "Adding...", class: "ui green button" %>
         <script>
-        $('#addTransaction').ready(() => {
-          $('.ui.dropdown').dropdown();
-          $('.ui.checkbox').checkbox();
-        });
+          $('#addTransaction').ready(() => {
+            $('.ui.dropdown').dropdown();
+            $('.ui.checkbox').checkbox();
+          });
         </script>
       </form>
     </div>
