@@ -20,12 +20,20 @@
     <%= render "_user_menu.html", assigns %>
     <main role="main" class="main">
       <%= if get_flash(@conn, :info) do %>
-        <p class="ui info message" role="alert"><%= get_flash(@conn, :info) %></p>
+        <p class="ui info message" role="alert"><i class="close icon"></i> <%= get_flash(@conn, :info) %></p>
       <%end %>
       <%= if get_flash(@conn, :error) do %>
-        <p class="ui negative message" role="alert"><%= get_flash(@conn, :error) %></p>
+        <p class="ui negative message" role="alert"><i class="close icon"></i> <%= get_flash(@conn, :error) %></p>
       <%end %>
       <%= @inner_content %>
     </main>
+    <script defer>
+      $('.message .close')
+      .on('click', function() {
+        $(this)
+          .closest('.message')
+          .transition('fade');
+      });
+    </script>
   </body>
 </html>

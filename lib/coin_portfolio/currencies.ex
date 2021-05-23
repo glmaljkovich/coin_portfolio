@@ -26,14 +26,29 @@ defmodule CoinPortfolio.Currencies do
   """
   def latest_currency_rates do
     latest_rates_query = from r1 in CurrencyRate,
-    select: %{base_currency: r1.base_currency, target_currency: r1.target_currency, max_timestamp: max(r1.timestamp)},
-    group_by: [r1.base_currency, r1.target_currency]
+      select: %{
+        base_currency: r1.base_currency,
+        target_currency: r1.target_currency,
+        max_timestamp: max(r1.timestamp)
+      },
+      group_by: [r1.base_currency, r1.target_currency]
     query = from(
       r2 in CurrencyRate,
       inner_join: r1 in subquery(latest_rates_query),
       on: r1.base_currency == r2.base_currency and r1.target_currency == r2.target_currency and r1.max_timestamp == r2.timestamp
     )
     Repo.all(query)
+  end
+
+  @doc """
+  Deletes all currency rates older than 24hs.
+  This is to comply with https://www.exchangerate-api.com/terms
+  """
+  def purge_currency_rates do
+    last_24_hs = DateTime.utc_now() |> DateTime.add(-60 * 60 * 24, :second) |> DateTime.to_iso8601()
+    query = from r1 in CurrencyRate,
+      where: r1.timestamp < ^last_24_hs
+    Repo.delete_all(query)
   end
 
   @doc """

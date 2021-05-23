@@ -13,8 +13,7 @@ config :coin_portfolio,
 # Currencies and Tokens
 config :coin_portfolio,
   accepted_tokens: ["BTC", "ETH", "DOGE", "DAI"],
-  accepted_currencies: ["ARS", "USD", "EUR"],
-  base_currency: "ARS"
+  accepted_currencies: ["ARS", "USD", "EUR"]
 
 # Configures the endpoint
 config :coin_portfolio, CoinPortfolioWeb.Endpoint,
@@ -39,6 +38,8 @@ config :coin_portfolio, CoinPortfolio.Scheduler,
     {"*/30 * * * *", fn -> CoinPortfolio.Scheduler.FetchRates.run() end},
     # Every 6 hours
     {"0 */6 * * *", fn -> CoinPortfolio.Scheduler.FetchCurrencyRates.run() end},
+    # Every 12 hours
+    {"0 */12 * * *", fn -> CoinPortfolio.Scheduler.PurgeCurrencyRates.run() end},
     # Every 6 hours
     {"0 */6 * * *", fn -> CoinPortfolio.Scheduler.BalanceSnapshot.run() end},
   ]

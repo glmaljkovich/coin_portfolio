@@ -11,6 +11,15 @@ cryptocurrency spend and earnings
 - A [CoinMarketCap](https://pro.coinmarketcap.com/) API key set as an env variable `CMC_API_KEY=your-api-key`
 - An [Exchange Rates](https://exchangerate-api.com) API key set as an env variable `EXCHANGE_RATE_API_KEY=another-api-key`
 
+## Configuration
+In `config.exs` you can set the `:accepted_currencies` and `:accepted_tokens` that will be pulled from both APIs
+``` elixir
+# Currencies and Tokens
+config :coin_portfolio,
+  accepted_tokens: ["BTC", "ETH", "DOGE", "DAI"],
+  accepted_currencies: ["ARS", "USD", "EUR"]
+```
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
