@@ -1,37 +1,38 @@
 <%=if @current_user do %>
 <div>
-<div class="ui centered grid mv-1">
-  <div class="ui center aligned circular segment">
-    <div class="ui small statistic">
-      <div class="value">
-        <%=if String.starts_with?(holdings_percentage(@holdings, @spent), "-") do %>
-          <i class="small red caret down icon"></i>
-        <%else %>
-          <i class="small green caret up icon"></i>
-        <%end %>
-        <i class=""></i>
-        <%= holdings_percentage(@holdings, @spent) %>%
-      </div>
-    </div>
-  </div>
-</div>
   <div class="ui desktop-padding container">
-    <div class="ui center aligned green segment">
-      <div class="ui grey statistic">
-        <div class="value">
-          <i class="tiny dollar sign icon"></i><%=to_money(@spent, @current_user) %>
-        </div>
-        <div class="label">
-          <%= @current_user.main_currency %> spent
+    <div class="ui center aligned horizontally padded subtle grid">
+      <div class="row">
+        <div class="ui tiny inverted statistic">
+          <div class="value">
+            <%=if String.starts_with?(holdings_percentage(@holdings, @spent), "-") do %>
+              <i class="small red caret down icon"></i>
+            <%else %>
+              <i class="small green caret up icon"></i>
+            <%end %>
+            <i class=""></i>
+            <%= holdings_percentage(@holdings, @spent) %>%
+          </div>
         </div>
       </div>
-      <i class="huge disabled right angle icon"></i>
-      <div class="ui <%= get_holdings_color @holdings, @spent %> statistic">
-        <div class="value">
-          <i class="tiny dollar sign icon"></i><%=to_money(@holdings, @current_user) %>
+      <div class="row">
+        <div class="ui <%= get_holdings_color @holdings, @spent %> statistic">
+          <div class="value">
+            <i class="tiny dollar sign icon"></i><%=to_money(@holdings, @current_user) %>
+          </div>
+          <div class="inverted label">
+            <%= @current_user.main_currency %> holdings
+          </div>
         </div>
-        <div class="label">
-          <%= @current_user.main_currency %> holdings
+      </div>
+      <div class="row">
+        <div class="ui tiny inverted statistic">
+          <div class="value">
+            <i class="tiny dollar sign icon"></i><%=to_money(@spent, @current_user) %>
+          </div>
+          <div class="label">
+            <%= @current_user.main_currency %> spent
+          </div>
         </div>
       </div>
     </div>

@@ -52,7 +52,7 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
   end
 
   def get_holdings_color(holdings, spent) do
-    if holdings > spent, do: "green", else: "red"
+    if holdings > spent, do: "inverted green", else: "red"
   end
 
   def token_symbol_name_map do
