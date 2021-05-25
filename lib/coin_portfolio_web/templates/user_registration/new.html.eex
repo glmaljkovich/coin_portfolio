@@ -8,7 +8,7 @@
   <% end %>
 <% end %>
 
-<div class="ui card">
+<div class="ui card mt-3">
 <div class="content">
 <div class="header">Register</div>
 <%= form_for @changeset, Routes.user_registration_path(@conn, :create), fn f -> %>

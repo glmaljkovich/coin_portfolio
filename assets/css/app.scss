@@ -3,7 +3,7 @@
     background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
     display: flow-root;
     height: auto;
-    min-height: calc(100% - 42px);
+    min-height: 100%;
     background-attachment: fixed;
     padding-top: 2em;
 }
@@ -51,6 +51,10 @@ a {
 
 .mt-3 {
     margin-top: 3rem!important;
+}
+
+.mt-6 {
+    margin-top: 6rem!important;
 }
 
 .mv-1 {

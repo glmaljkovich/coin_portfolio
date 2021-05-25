@@ -4,9 +4,9 @@ defmodule Welcome do
 
   def render(assigns) do
     ~L"""
-    <div class="ui center aligned container mt-3">
+    <div class="ui center aligned container mt-6">
       <h1 class="ui center aligned inverted icon header">
-        <i class="bitcoin icon"></i>
+        <img src="images/logo.png" class="ui image" />
         <div class="content">Coin Portfolio</div>
       </h1>
       <div class="inline">
