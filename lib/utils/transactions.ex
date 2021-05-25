@@ -3,12 +3,12 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
   @ars "ARS"
 
   def get_rates_for_currency(rates, main_currency) do
-    extracted_rates = for rate <- rates, into: %{}, do: {"#{rate.token}/#{rate.currency}", rate.rate}
+    extracted_rates = for rate <- rates, into: %{}, do: {"#{rate.token}/#{rate.currency}", %{ rate: rate.rate, id: rate.cmc_id}}
     for {token, rate} <- extracted_rates,
       into: %{},
       do: {
         token,
-        (if main_currency == @ars, do: rate * @ars_taxes_factor, else: rate)
+        (if main_currency == @ars, do: %{ rate: rate.rate * @ars_taxes_factor, id: rate.id}, else: rate)
       }
   end
 
@@ -43,9 +43,9 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
         exchange_rate = get_exchange_rate(currency_rates, current_user, transaction)
         rate = rates["#{String.upcase(transaction.token)}/#{transaction.main_currency}"]
         if transaction.type == "buy" do
-          (transaction.token_amount * rate * exchange_rate.rate) + total
+          (transaction.token_amount * rate.rate * exchange_rate.rate) + total
         else
-          total - (transaction.token_amount * rate * exchange_rate.rate)
+          total - (transaction.token_amount * rate.rate * exchange_rate.rate)
         end
       end
     )
@@ -80,7 +80,7 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
   end
 
   def token_to_main_currency(asset, rates, current_user) do
-    to_precision(asset.total * rates["#{asset.token}/#{current_user.main_currency}"], 2)
+    to_precision(asset.total * rates["#{asset.token}/#{current_user.main_currency}"].rate, 2)
   end
 
   def balance_history_to_chart_data(balance_history) do

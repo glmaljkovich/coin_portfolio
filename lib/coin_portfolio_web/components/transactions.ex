@@ -22,7 +22,8 @@ defmodule TransactionsComponent do
           <%=for transaction <- @transactions do %>
           <tr>
             <td>
-              <i class="large circular <%=@token_names[String.upcase(transaction.token)] %> icon"></i>
+              <img src="<%= "https://s2.coinmarketcap.com/static/img/coins/128x128/#{@rates["#{String.upcase(transaction.token)}/#{@current_user.main_currency}"].id}.png" %>" class="ui mini circular inline image" />
+              &nbsp;
               <span class="capitalize"><%=@token_names[String.upcase(transaction.token)] %></span>
             </td>
             <td>

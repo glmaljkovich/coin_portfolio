@@ -55,7 +55,7 @@
 
   <!-- Transactions -->
   <h2 class="ui inverted header">Transactions</h2>
-  <%= live_component @socket, TransactionsComponent, id: "transactions", transactions: @transactions, token_names: @token_names, current_user: @current_user %>
+  <%= live_component @socket, TransactionsComponent, id: "transactions", transactions: @transactions, rates: @rates, token_names: @token_names, current_user: @current_user %>
 </div>
 <% else %>
   <%= live_component @socket, Welcome, id: "welcome" %>

@@ -17,8 +17,8 @@ defmodule Assets do
           <%=for asset <- @assets do %>
           <tr>
             <td>
-              <i class="large circular <%=@token_names[String.upcase(asset.token)] %> icon"></i>
-              <span class="capitalize"><%=@token_names[String.upcase(asset.token)] %><span>
+            <img src="<%= "https://s2.coinmarketcap.com/static/img/coins/128x128/#{@rates["#{String.upcase(asset.token)}/#{@current_user.main_currency}"].id}.png" %>" class="ui mini circular inline image" />
+              &nbsp;<span class="capitalize"><%=@token_names[String.upcase(asset.token)] %><span>
             </td>
             <td>
               <div class="ui list">
@@ -31,7 +31,7 @@ defmodule Assets do
               </div>
             </td>
             <td>
-              $<%= to_money(@rates["#{String.upcase(asset.token)}/#{@current_user.main_currency}"], @current_user) %> <%= String.upcase(@current_user.main_currency) %>
+              $<%= to_money(@rates["#{String.upcase(asset.token)}/#{@current_user.main_currency}"].rate, @current_user) %> <%= String.upcase(@current_user.main_currency) %>
             </td>
           </tr>
           <%end %>

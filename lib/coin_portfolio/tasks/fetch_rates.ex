@@ -19,7 +19,10 @@ defmodule CoinPortfolio.Scheduler.FetchRates do
             "token_name" => rate["name"],
             "rate" => price["price"],
             "currency" => currency,
-            "timestamp" => price["last_updated"]
+            "timestamp" => price["last_updated"],
+            "cmc_id" => rate["id"],
+            "percent_change_24h" => price["percent_change_24h"],
+            "percent_change_7d" => price["percent_change_7d"]
           }
           Tokens.create_rates(record)
           IO.puts "Created rate for token #{token}"
