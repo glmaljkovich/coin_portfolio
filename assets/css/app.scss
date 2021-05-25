@@ -41,12 +41,24 @@ a {
     background-attachment: fixed;
 }
 
+.ui.header.no-margin {
+    margin: 0;
+}
+
+.meta.small{
+    font-size: 14px;
+}
+
 .mb-0 {
     margin: 0!important;
 }
 
 .mb-1 {
     margin-bottom: 1rem!important;
+}
+
+.mt-1 {
+    margin-top: 1rem!important;
 }
 
 .mt-3 {
@@ -106,28 +118,13 @@ a {
     }
 }
 
-.busd::before {
-    content: "B";
-    /* display: block; */
-    color: black;
-    width: 20px;
-    font-family: sans-serif;
-}
-
-.dai::before {
-    content: "D";
-    /* display: block; */
-    color: black;
-    width: 20px;
-    font-family: sans-serif;
-}
-
-.dogecoin::before {
-    content: "D";
-    /* display: block; */
-    color: black;
-    width: 20px;
-    font-family: sans-serif;
+.text {
+    &.green {
+        color: #21ba45;
+    }
+    &.red {
+        color: #db2828;
+    }
 }
 
 .desktop-padding {

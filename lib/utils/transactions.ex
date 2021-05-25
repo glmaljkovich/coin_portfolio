@@ -3,17 +3,25 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
   @ars "ARS"
 
   def get_rates_for_currency(rates, main_currency) do
-    extracted_rates = for rate <- rates, into: %{}, do: {"#{rate.token}/#{rate.currency}", %{ rate: rate.rate, id: rate.cmc_id}}
+    extracted_rates = for rate <- rates,
+    into: %{}, do: { "#{rate.token}/#{rate.currency}", Map.merge(rate, %{ id: rate.cmc_id }) }
     for {token, rate} <- extracted_rates,
       into: %{},
       do: {
         token,
-        (if main_currency == @ars, do: %{ rate: rate.rate * @ars_taxes_factor, id: rate.id}, else: rate)
+        (if main_currency == @ars,
+        do: Map.merge(rate, %{ rate: rate.rate * @ars_taxes_factor }),
+        else: rate)
       }
   end
 
   def to_precision(val, decimals) do
     Float.to_string(val, decimals: decimals)
+  end
+
+  def rates_get(rates, token, current_user, prop) do
+    rate = rates["#{String.upcase(token)}/#{current_user.main_currency}"]
+    Map.get(rate, prop)
   end
 
   def total_main_currency_spent(transactions, currency_rates, current_user) do
