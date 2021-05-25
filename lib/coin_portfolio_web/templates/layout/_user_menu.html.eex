@@ -1,7 +1,8 @@
 
-<div class="ui text menu mb-0">
+<div class="ui top fixed inverted gradient text menu mb-0">
   <div class="header item">
-    <a href="/"><i class="large bitcoin icon"></i> Coin Portfolio</a>
+    <img src="<%= Routes.static_path(@conn, "/images/logo.png") %>" /> &nbsp;
+    <a href="/"> Coin Portfolio</a>
   </div>
   <div class="menu right">
     <%= if @current_user do %>
