@@ -24,7 +24,7 @@ defmodule CoinPortfolioWeb.Endpoint do
     at: "/",
     from: :coin_portfolio,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt semantic manifest.webmanifest pwabuilder-sw.js)
+    only: ~w(css fonts images js favicon.ico robots.txt semantic manifest.json pwabuilder-sw.js)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
