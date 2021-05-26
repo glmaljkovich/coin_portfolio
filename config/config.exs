@@ -40,6 +40,8 @@ config :coin_portfolio, CoinPortfolio.Scheduler,
     {"0 */6 * * *", fn -> CoinPortfolio.Scheduler.FetchCurrencyRates.run() end},
     # Every 12 hours
     {"0 */12 * * *", fn -> CoinPortfolio.Scheduler.PurgeCurrencyRates.run() end},
+    # Every 12 hours
+    {"0 */12 * * *", fn -> CoinPortfolio.Scheduler.PurgeRates.run() end},
     # Every 6 hours
     {"0 */6 * * *", fn -> CoinPortfolio.Scheduler.BalanceSnapshot.run() end},
   ]

@@ -30,6 +30,17 @@ defmodule CoinPortfolio.Tokens do
   end
 
   @doc """
+  Deletes all rates older than 24hs.
+  This is to avoid reaching Heroku Postgres hobby-dev DB quota so fast
+  """
+  def purge_rates do
+    last_24_hs = DateTime.utc_now() |> DateTime.add(-60 * 60 * 24, :second) |> DateTime.to_iso8601()
+    query = from r1 in Rates,
+      where: r1.timestamp < ^last_24_hs
+    Repo.delete_all(query)
+  end
+
+  @doc """
   Gets a single rates.
 
   Raises `Ecto.NoResultsError` if the Rates does not exist.
