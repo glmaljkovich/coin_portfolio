@@ -12,7 +12,7 @@ defmodule Assets do
             <div class="eight wide column">
               <img src="<%= "https://s2.coinmarketcap.com/static/img/coins/128x128/#{@rates["#{String.upcase(asset.token)}/#{@current_user.main_currency}"].id}.png" %>" class="ui mini circular left floated image" />
               <div class="ui header no-margin">
-                <span class="capitalize"><%=@token_names[String.upcase(asset.token)] %><span>
+                <span class="capitalize"><%= rates_get(@rates, asset.token, @current_user, :token_name) %><span>
               </div>
               <div class="meta small">
                 <%= String.upcase(asset.token) %>
@@ -22,7 +22,7 @@ defmodule Assets do
               <div class="ui right aligned list">
                 <div class="item">
                   <h5 class="ui header">
-                    <%= to_precision(asset.total, 8) %> <%= String.upcase(asset.token) %>
+                    <%= to_precision(asset.total, 6) %> <%= String.upcase(asset.token) %>
                   </h5>
                 </div>
                 <div class="item"><%= to_money(token_to_main_currency(asset, @rates, @current_user), @current_user, true) %> <%= String.upcase(@current_user.main_currency) %></div>

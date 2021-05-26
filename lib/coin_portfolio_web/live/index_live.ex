@@ -41,7 +41,6 @@ defmodule CoinPortfolioWeb.IndexLive do
       |> assign(:accepted_tokens, accepted_tokens)
       |> assign(:accepted_currencies, accepted_currencies)
       |> assign(:transactions, Transactions.find_transactions(current_user.email))
-      |> assign(:token_names, token_symbol_name_map())
       |> assign(:assets, Transactions.holdings_by_token(current_user))
       |> assign(:holdings, holdings)
       |> assign(:spent, spent)

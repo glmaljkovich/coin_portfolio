@@ -63,16 +63,6 @@ defmodule CoinPortfolio.Utils.TransactionUtils do
     if holdings > spent, do: "inverted green", else: "red"
   end
 
-  def token_symbol_name_map do
-    %{
-      "ETH" => "ethereum",
-      "BTC" => "bitcoin",
-      "DAI" => "dai",
-      "DOGE" => "dogecoin",
-      "BUSD" => "busd"
-    }
-  end
-
   def holdings_percentage(holdings, spent) do
     change = holdings - spent
     if spent > 0 do

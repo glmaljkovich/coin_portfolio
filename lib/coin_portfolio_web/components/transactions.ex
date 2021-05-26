@@ -24,7 +24,7 @@ defmodule TransactionsComponent do
             <td>
               <img src="<%= "https://s2.coinmarketcap.com/static/img/coins/128x128/#{@rates["#{String.upcase(transaction.token)}/#{@current_user.main_currency}"].id}.png" %>" class="ui mini circular inline image" />
               &nbsp;
-              <span class="capitalize"><%=@token_names[String.upcase(transaction.token)] %></span>
+              <span class="capitalize"><%=rates_get(@rates, transaction.token, @current_user, :token_name) %></span>
             </td>
             <td>
               <%=if transaction.type == "buy" do %>
